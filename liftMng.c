@@ -5,7 +5,7 @@ pid_t* pid_list;
 int lift_is_moving=FALSE;
 
 int queue[MAX_QUEUE];
-int head=-1,tail=0;
+int head=-1,tail=-1;
 void enqueue(int caller);
 int dequeue();
 void show();
@@ -28,7 +28,7 @@ void up_request(int sigNo){
 void lift_arrival(int sigNo){
 	// signal(SIGRTMIN+F2_CALL,SIG_IGN);	signal(SIGRTMIN+F3_CALL,SIG_IGN);	signal(SIGRTMIN+F4_CALL,SIG_IGN);	signal(SIGRTMIN+F5_CALL,SIG_IGN);
 	// signal(SIGRTMIN+MOVING,SIG_IGN);signal(SIGRTMIN+F1_ARRIVAL,SIG_IGN);signal(SIGRTMIN+F2_ARRIVAL,SIG_IGN);signal(SIGRTMIN+F3_ARRIVAL,SIG_IGN);signal(SIGRTMIN+F4_ARRIVAL,SIG_IGN);signal(SIGRTMIN+F5_ARRIVAL,SIG_IGN);
-	puts("Da nhan duoc thogn bao tu CTR");
+	//puts("Da nhan duoc thogn bao tu CTR");
 	switch(sigNo-SIGRTMIN){
 		case F1_ARRIVAL:
 			//kill(pid_list[OPE_PANE1],sigNo);
@@ -63,8 +63,9 @@ int main(int argc, char const *argv[])
 	while(1){
 		sleep(1);
 		if(!lift_is_moving){
-			sigNo=dequeue();
-			//printf("sigNo: %d\n",sigNo );
+			sigNo=dequeue();			
+			//printf("Head %d %d and Tail %d %d and Next %d\n",head,queue[head],tail,queue[tail],sigNo );
+			//show();
 			if(sigNo>0) {
 				lift_is_moving=TRUE;
 				kill(pid_list[LIFT_CTR],sigNo);
@@ -72,17 +73,30 @@ int main(int argc, char const *argv[])
 		}
 		else if(++count%5==0) puts("Lift moving...");
 					
-	}			
+	}
+	// for(int i=1;i<10;i++){
+	// 	enqueue(i*10);
+	// 	show();
+	// 	puts("");
+	// 	if(i==3||i==7||i==8) printf("De %d\n",dequeue() );
+	// }			
 	return 0;
 }
 void enqueue(int caller){
-	if(tail==head ){
-		printf("Queue is full, request is aborted\n");
+	int next=(tail+1)%MAX_QUEUE;
+	if(head==-1){
+		head=tail=0;
+		queue[head]=caller;
 	}
 	else{
-		queue[tail]=caller;
-		if(head==-1)head=0;
-		tail=(tail+1)%MAX_QUEUE;
+		if(next==head ){
+			//printf("Head %d %d and Tail %d %d and Next %d\n",head,queue[head],tail,queue[tail],next );		
+			printf("Queue is full, request is aborted\n");
+		}
+		else{
+			queue[next]=caller;		
+			tail=next;
+		}	
 	}
 	
 }
@@ -93,13 +107,13 @@ int dequeue(){
 	else{
 		int tmp=queue[head];
 		queue[head]=0;
-		head=(head+1)%MAX_QUEUE;
+		if(head!=tail) head=(head+1)%MAX_QUEUE;
 		return tmp;
 	}
 }
 void show(){	
 	int i;
 	for(i=0;i<MAX_QUEUE;i++){
-		printf("%d",queue[i]);
+		printf("%d ",queue[i]);
 	} 
 }

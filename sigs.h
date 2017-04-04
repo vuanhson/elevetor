@@ -12,6 +12,7 @@
 #include <time.h>
 
 enum {LIFT_MNG,LIFT_CTR,LIFT_BODY,LIFT_SENSOR,OPE_PANE1,OPE_PANEX,LIFT_POSITION};
+#define CLOCK 500000
 #define TRUE 1
 #define FALSE 0
 #define SUCCESS 1

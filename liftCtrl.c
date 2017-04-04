@@ -32,19 +32,19 @@ void sensor_change(int sigNo){
 	// printf("sensor_change_get %d \n",sigNo );
 	switch(sigNo-SIGRTMIN){
 		case F1_ARRIVAL:
-		puts("toi tang 1");
+		puts("di qua tang 1");
 		if(des==1){
 			kill(pid_list[LIFT_BODY],SIGRTMIN+LIFT_STOP);			
-			puts("bao stop ve MNG");
+			puts("thong bao chuyen hang xong ve mng");
 			kill(pid_list[LIFT_MNG],SIGRTMIN+F1_ARRIVAL);
 		}
 		// else kill(pid_list[LIFT_MNG],SIGRTMIN+MOVING);
 		break;
 		case F2_ARRIVAL:
-		puts("toi tang 2");
+		puts("di qua tang 2");
 		if(des==2){
 			kill(pid_list[LIFT_BODY],SIGRTMIN+LIFT_STOP);
-			puts("2chuyen hang trong 3s");
+			puts("Tai tang 2, chuyen hang trong 3s");
 			sleep(3);
 			des=1;
 			kill(pid_list[LIFT_BODY],SIGRTMIN+LIFT_DOWN);
@@ -54,10 +54,10 @@ void sensor_change(int sigNo){
 		// else kill(pid_list[LIFT_MNG],SIGRTMIN+MOVING);
 		break;
 		case F3_ARRIVAL:
-		puts("toi tang 3");
+		puts("di qua tang 3");
 		if(des==3){
 			kill(pid_list[LIFT_BODY],SIGRTMIN+LIFT_STOP);
-			puts("3chuyen hang trong 3s");
+			puts("Tai tang 3, chuyen hang trong 3s");
 			sleep(3);
 			des=1;
 			kill(pid_list[LIFT_BODY],SIGRTMIN+LIFT_DOWN);
@@ -67,10 +67,10 @@ void sensor_change(int sigNo){
 		// else kill(pid_list[LIFT_MNG],SIGRTMIN+MOVING);
 		break;
 		case F4_ARRIVAL:
-		puts("toi tang 4");
+		puts("di qua tang 4");
 		if(des==4){
 			kill(pid_list[LIFT_BODY],SIGRTMIN+LIFT_STOP);
-			puts("4chuyen hang trong 3s");
+			puts("Tai tang 4, chuyen hang trong 3s");
 			sleep(3);
 			des=1;
 			kill(pid_list[LIFT_BODY],SIGRTMIN+LIFT_DOWN);
@@ -80,10 +80,10 @@ void sensor_change(int sigNo){
 		// else kill(pid_list[LIFT_MNG],SIGRTMIN+MOVING);
 		break;
 		case F5_ARRIVAL:
-		puts("toi tang 5");
+		puts("di qua tang 5");
 		if(des==5){
 			kill(pid_list[LIFT_BODY],SIGRTMIN+LIFT_STOP);
-			puts("5chuyen hang trong 3s");
+			puts("Tai tang 5, chuyen hang trong 3s");
 			sleep(3);
 			des=1;
 			kill(pid_list[LIFT_BODY],SIGRTMIN+LIFT_DOWN);
@@ -105,7 +105,7 @@ int main(int argc, char const *argv[]){
 	pid_list=update_pid(LIFT_CTR);
 	printf("Ctr: %d\n",getpid());			
 	while(1){
-		sleep(3);		
+		sleep(5);		
 	}		
 	return 0;
 }

@@ -10,7 +10,7 @@ int main(int argc, char const *argv[])
 	printf("init value: %d\n",pid_list[LIFT_POSITION] );
 	int t=0;
 	while(1){
-		sleep(1);
+		usleep(CLOCK);
 		//printf("%d\n",pid_list[LIFT_POSITION] );
 		if(previous_position ^ pid_list[LIFT_POSITION]){
 			switch(pid_list[LIFT_POSITION]){			
