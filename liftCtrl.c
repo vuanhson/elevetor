@@ -4,30 +4,30 @@ pid_t *pid_list,sensor_process_id,body_process_id;
 int des=0;
 // Hàm xử lí ngắt khi nhận lệnh yêu cầu chuyển hàng từ liftMng:
 void up_request(int sigNo){	
-	printf("up_request_get %d \n",sigNo );
+	//printf("up_request_get %d \n",sigNo );
 	switch(sigNo-SIGRTMIN){
 		case F1_CALL: des=1;
-		//printf("Back to floor %d\n",des);
+		printf("Back to floor %d\n",des);
 		send_signal(body_process_id,SIGRTMIN+LIFT_DOWN);
 		send_signal(pid_list[LIFT_MNG],SIGRTMIN+LIFT_DOWN);
 		break;
 		case F2_CALL: des=2;
-		//printf("Request up to floor %d\n",des);
+		printf("Request up to floor %d\n",des);
 		send_signal(body_process_id,SIGRTMIN+LIFT_UP);
 		send_signal(pid_list[LIFT_MNG],SIGRTMIN+LIFT_UP);
 		break;
 		case F3_CALL: des=3;
-		//printf("Request up to floor %d\n",des);
+		printf("Request up to floor %d\n",des);
 		send_signal(body_process_id,SIGRTMIN+LIFT_UP);
 		send_signal(pid_list[LIFT_MNG],SIGRTMIN+LIFT_UP);
 		break;
 		case F4_CALL: des=4;
-		//printf("Request up to floor %d\n",des);
+		printf("Request up to floor %d\n",des);
 		send_signal(body_process_id,SIGRTMIN+LIFT_UP);
 		send_signal(pid_list[LIFT_MNG],SIGRTMIN+LIFT_UP);
 		break;
 		case F5_CALL: des=5;
-		//printf("Request up to floor %d\n",des);
+		printf("Request up to floor %d\n",des);
 		send_signal(body_process_id,SIGRTMIN+LIFT_UP);
 		send_signal(pid_list[LIFT_MNG],SIGRTMIN+LIFT_UP);
 		break;
@@ -44,7 +44,7 @@ void sensor_change(int sigNo){
 		send_signal(pid_list[LIFT_MNG],SIGRTMIN+F1_ARRIVAL);
 		if(des==1){
 			send_signal(body_process_id,SIGRTMIN+LIFT_STOP);			
-			puts("thong bao chuyen hang xong ve mng");			
+			puts("Finish move");			
 		}
 		// else send_signal(pid_list[LIFT_MNG],SIGRTMIN+MOVING);
 		break;
@@ -80,9 +80,9 @@ void sensor_change(int sigNo){
 */
 void sensor_process_run(){	
 	int control_process_id=getppid();
-	printf("Sensor: %d of  Ctrl: %d \n",getpid(),control_process_id);
+	//printf("Sensor: %d of  Ctrl: %d \n",getpid(),control_process_id);
 	int previous_position=pid_list[LIFT_POSITION];
-	printf("init value: %d\n",pid_list[LIFT_POSITION] );
+	//printf("init value: %d\n",pid_list[LIFT_POSITION] );
 	int t=0;
 	while(1){
 		usleep(CLOCK);
@@ -133,7 +133,7 @@ void body_process_run(){// đây là hàm thực hiện công việc chính củ
 	signal(SIGRTMIN+LIFT_UP,body);signal(SIGRTMIN+LIFT_DOWN,body);signal(SIGRTMIN+LIFT_STOP,body);	
 	
 	pid_list[LIFT_POSITION]=15;// khởi tạo vị trí ban đầu cho body thang máy
-	printf("Body: %d of  Ctrl: %d \n",getpid(),control_process_id );
+	//printf("Body: %d of  Ctrl: %d \n",getpid(),control_process_id );
 	//pid_t last_value=0;// dont care, đưa thêm vào để debug trong khi làm.
 	while(1){		
 		usleep(CLOCK);
@@ -173,6 +173,11 @@ void body_process_run(){// đây là hàm thực hiện công việc chính củ
 	đâu rồi, nếu thấy đi qua tầng nào thì báo về liftCtr)
 	
 */
+void quit(){
+	send_signal(body_process_id,SIGKILL);
+	send_signal(sensor_process_id,SIGKILL);
+	exit(1);
+}
 int main(int argc, char const *argv[]){
 	
 	signal(SIGRTMIN+F2_CALL,up_request);signal(SIGRTMIN+F3_CALL,up_request);signal(SIGRTMIN+F4_CALL,up_request);signal(SIGRTMIN+F5_CALL,up_request);
@@ -191,6 +196,7 @@ int main(int argc, char const *argv[]){
 			body_process_run();
 		}
 		else{
+			signal(SIGINT,quit);
 			printf("body_process_id: %d\n",body_process_id );
 			while(1){
 				sleep(5);	

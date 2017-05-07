@@ -18,35 +18,43 @@ static void
 func2(GtkWidget *widget,
       gpointer data)
 {
-    g_print("Ban da click button2\n");
+    //g_print("Ban da click button2\n");
     send_signal(pid_list[LIFT_MNG],SIGRTMIN+F2_CALL);
 }
 static void
 func3(GtkWidget *widget,
       gpointer data)
 {
-    g_print("Ban da click button3\n");
+    //g_print("Ban da click button3\n");
     send_signal(pid_list[LIFT_MNG],SIGRTMIN+F3_CALL);
 }
 static void
 func4(GtkWidget *widget,
       gpointer data)
 {
-    g_print("Ban da click button4\n");
+    //g_print("Ban da click button4\n");
     send_signal(pid_list[LIFT_MNG],SIGRTMIN+F4_CALL);
 }
 static void
 func5(GtkWidget *widget,
       gpointer data)
 {
-    g_print("Ban da click button5\n");
+    //g_print("Ban da click button5\n");
     send_signal(pid_list[LIFT_MNG],SIGRTMIN+F5_CALL);    
 }
 
-static void quit(){
-    gtk_widget_destroy(window);
+static void quit(){    
+    send_signal(pid_list[LIFT_MNG],SIGINT);
+    send_signal(pid_list[LIFT_CTR],SIGINT);
+    int i;
+    pid_t this_pid=getpid();
+    for(i=OPE_PANE1;i<=OPE_PANE5;i++){
+        if(this_pid!=pid_list[i])
+            send_signal(pid_list[i],SIGINT);
+    }    
     shmdt(pid_list);
     release_shm();
+    gtk_widget_destroy(window);
 }
 static void
 activate(GtkApplication *app,
@@ -55,7 +63,8 @@ activate(GtkApplication *app,
 
     window = gtk_application_window_new(app);
     gtk_window_set_title(GTK_WINDOW(window), window_title);
-    gtk_window_set_default_size(GTK_WINDOW(window), 200, 200);
+    gtk_window_set_default_size(GTK_WINDOW(window), 150, 200);
+    gtk_window_move(GTK_WINDOW(window),375,250);
     //   Add Vbox
     main_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
     gtk_container_add(GTK_CONTAINER(window), main_box);
@@ -67,7 +76,7 @@ activate(GtkApplication *app,
     gtk_widget_set_sensitive(up_down_btn, FALSE);
     gtk_container_add(GTK_CONTAINER(button_box), up_down_btn);
 
-    current_floor_btn = gtk_button_new_with_label("---");
+    current_floor_btn = gtk_button_new_with_label("1");
     gtk_widget_set_sensitive(current_floor_btn, FALSE);
     gtk_container_add(GTK_CONTAINER(button_box), current_floor_btn);
     // button 2
@@ -137,8 +146,7 @@ int main(int argc, char *argv[])
 	signal(SIGRTMIN+F1_ARRIVAL,current_floor_change);signal(SIGRTMIN+F2_ARRIVAL,current_floor_change);signal(SIGRTMIN+F3_ARRIVAL,current_floor_change);signal(SIGRTMIN+F4_ARRIVAL,current_floor_change);signal(SIGRTMIN+F5_ARRIVAL,current_floor_change);
 	signal(SIGRTMIN+LIFT_UP,direction_change);signal(SIGRTMIN+LIFT_DOWN,direction_change);signal(SIGRTMIN+LIFT_STOP,direction_change);
     pid_list=update_pid(OPE_PANE1);	
-    printf("OPE_PANE1 %d\n",pid_list[OPE_PANE1] );
-    printf("MNG %d\n",pid_list[LIFT_MNG] );	
+    printf("ope1_process_id %d\n",pid_list[OPE_PANE1] );    
 	GtkApplication *app;
     int status;
     strcpy(window_title,"Tầng 1");    

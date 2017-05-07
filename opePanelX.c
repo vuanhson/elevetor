@@ -16,23 +16,32 @@ call_func(GtkWidget *widget,
       gpointer data)
 {
     int this_floor=*(int*)data;
-    g_print("Ban da click call_btn at floor: %d\n",this_floor-SIGRTMIN-10);
+    //g_print("Ban da click call_btn at floor: %d\n",this_floor-SIGRTMIN-10);
     send_signal(pid_list[LIFT_MNG],this_floor);    
 }
-static void quit(){
-    gtk_widget_destroy(window);
+static void quit(){ 
+    send_signal(pid_list[LIFT_MNG],SIGINT);
+    send_signal(pid_list[LIFT_CTR],SIGINT);
+    int i;
+    pid_t this_pid=getpid();
+    for(i=OPE_PANE1;i<=OPE_PANE5;i++){
+        if(this_pid!=pid_list[i])
+            send_signal(pid_list[i],SIGINT);
+    }  
     shmdt(pid_list);
     release_shm();
+    gtk_widget_destroy(window);
 }
 static void
 activate(GtkApplication *app,
          gpointer user_data)
 {
-
-    //printf("%d\n",*(int*)user_data );
+    int floor_number=*(int*)user_data-SIGRTMIN-F1_CALL+1;
+    //printf("%d\n",floor_number);
     window = gtk_application_window_new(app);
     gtk_window_set_title(GTK_WINDOW(window), window_title);
-    gtk_window_set_default_size(GTK_WINDOW(window), 200, 200);
+    gtk_window_set_default_size(GTK_WINDOW(window), 150, 100);
+    gtk_window_move(GTK_WINDOW(window),150*(floor_number-1),100);
     //   Add Vbox
     main_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
     gtk_container_add(GTK_CONTAINER(window), main_box);
@@ -44,7 +53,7 @@ activate(GtkApplication *app,
     gtk_widget_set_sensitive(up_down_btn, FALSE);
     gtk_container_add(GTK_CONTAINER(button_box), up_down_btn);
 
-    current_floor_btn = gtk_button_new_with_label("---");
+    current_floor_btn = gtk_button_new_with_label("1");
     gtk_widget_set_sensitive(current_floor_btn, FALSE);
     gtk_container_add(GTK_CONTAINER(button_box), current_floor_btn);
     // button x
