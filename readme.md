@@ -1,10 +1,11 @@
-# Project folder môn nhúng ITSS của cô BTQMai
+# Project folder môn nhúng ITSS của cô BTQMai - (2016-2017)  
+# GROUP 5_IS _K58  
 ## Thành Viên:
 Nguyễn Đình Hùng  
 Nguyễn Đình Tạo  
 Nguyễn Đình Chính  
 Vũ Anh Sơn  
-##Cách sử dụng:
+## Cách sử dụng:  
 **Bước 1:**:Cài đặt GTK+ 3(ubuntu)  
 ```
 sudo apt-get install libgtk-3-dev
