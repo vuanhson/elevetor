@@ -19,27 +19,28 @@ int main(int argc, char const *argv[])
 	pid_list[LIFT_POSITION]=0;
 	printf("Body: %d\n",getpid());
 	pid_t last_value=0;
-	while(1){
+	while(1){		
 		usleep(CLOCK);
 		switch(action){
 			case DOWN:
 				if(pid_list[LIFT_POSITION]>15) {
-					pid_list[LIFT_POSITION]-= VANTOC;
-					last_value=pid_list[LIFT_POSITION];
+					pid_list[LIFT_POSITION]-= VANTOC;					
 				}
 				else action=0;
 				break;			
 			case UP:
 				if(pid_list[LIFT_POSITION]<135) {
-					pid_list[LIFT_POSITION]+= VANTOC;
-					last_value=pid_list[LIFT_POSITION];
+					pid_list[LIFT_POSITION]+= VANTOC;					
 				}
 				else action=0;
 				break;
 			default:
 				break;
 		}
-		if(last_value!=pid_list[LIFT_POSITION]) printf("Height: %.1f metter\n",pid_list[LIFT_POSITION]/10.0);				
+		if(last_value!=pid_list[LIFT_POSITION]) {
+			printf("Height: %.1f metter\n",pid_list[LIFT_POSITION]/10.0);
+			last_value=pid_list[LIFT_POSITION];
+		}				
 	}		
 	return 0;
 }

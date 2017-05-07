@@ -11,9 +11,7 @@ int dequeue();
 void show();
 
 void up_request(int sigNo){
-	int floor;
-	// signal(SIGRTMIN+F2_CALL,SIG_IGN);	signal(SIGRTMIN+F3_CALL,SIG_IGN);	signal(SIGRTMIN+F4_CALL,SIG_IGN);	signal(SIGRTMIN+F5_CALL,SIG_IGN);
-	// signal(SIGRTMIN+MOVING,SIG_IGN);signal(SIGRTMIN+F1_ARRIVAL,SIG_IGN);signal(SIGRTMIN+F2_ARRIVAL,SIG_IGN);signal(SIGRTMIN+F3_ARRIVAL,SIG_IGN);signal(SIGRTMIN+F4_ARRIVAL,SIG_IGN);signal(SIGRTMIN+F5_ARRIVAL,SIG_IGN);
+	int floor;	
 	enqueue(sigNo);
 	show();
 	switch(sigNo-SIGRTMIN){
@@ -25,28 +23,27 @@ void up_request(int sigNo){
 	}
 	printf("Request up to floor %d\n",floor);	
 }
+void notifications(int sigNo){
+	kill(pid_list[OPE_PANE1],sigNo);
+	// kill(pid_list[OPE_PANE2],sigNo);
+	// kill(pid_list[OPE_PANE3],sigNo);
+	// kill(pid_list[OPE_PANE4],sigNo);
+	// kill(pid_list[OPE_PANE5],sigNo);
+}
 void lift_arrival(int sigNo){
-	// signal(SIGRTMIN+F2_CALL,SIG_IGN);	signal(SIGRTMIN+F3_CALL,SIG_IGN);	signal(SIGRTMIN+F4_CALL,SIG_IGN);	signal(SIGRTMIN+F5_CALL,SIG_IGN);
-	// signal(SIGRTMIN+MOVING,SIG_IGN);signal(SIGRTMIN+F1_ARRIVAL,SIG_IGN);signal(SIGRTMIN+F2_ARRIVAL,SIG_IGN);signal(SIGRTMIN+F3_ARRIVAL,SIG_IGN);signal(SIGRTMIN+F4_ARRIVAL,SIG_IGN);signal(SIGRTMIN+F5_ARRIVAL,SIG_IGN);
-	//puts("Da nhan duoc thogn bao tu CTR");
+	notifications(sigNo);
 	switch(sigNo-SIGRTMIN){
-		case F1_ARRIVAL:
-			//kill(pid_list[OPE_PANE1],sigNo);
-			// sigNo=dequeue();
-			// if(sigNo!=-1) kill(pid_list[LIFT_CTR],sigNo);
+		case F1_ARRIVAL:			
 			puts("Lift stopped!");
-			lift_is_moving=FALSE;			
+			lift_is_moving=FALSE;						
 			break;
-		case F2_ARRIVAL:		
-		case F3_ARRIVAL:		
-		case F4_ARRIVAL:		
-		case F5_ARRIVAL:
-			// puts("Lift stopped!");
-			// lift_is_moving=FALSE;
-			//kill(pid_list[OPE_PANEX],sigNo);
-			// puts("DANG CHUYEN HANG 3s");
-			// sleep(3);
-			// kill(pid_list[LIFT_CTR],SIGRTMIN+F1_CALL);
+		case F2_ARRIVAL:			
+			break;		
+		case F3_ARRIVAL:			
+			break;		
+		case F4_ARRIVAL:			
+			break;		
+		case F5_ARRIVAL:			
 			break;		
 		default:
 			lift_is_moving=TRUE;
@@ -73,13 +70,7 @@ int main(int argc, char const *argv[])
 		}
 		else if(++count%5==0) puts("Lift moving...");
 					
-	}
-	// for(int i=1;i<10;i++){
-	// 	enqueue(i*10);
-	// 	show();
-	// 	puts("");
-	// 	if(i==3||i==7||i==8) printf("De %d\n",dequeue() );
-	// }			
+	}				
 	return 0;
 }
 void enqueue(int caller){
