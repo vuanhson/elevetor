@@ -1,5 +1,5 @@
-# Project folder môn nhúng ITSS của cô BTQMai - (2016-2017)  
-# GROUP 5_IS _K58  
+# Project folder môn nhúng ITSS của cô BTQMai 
+## GROUP 5_IS _K58 - (2016-2017)  
 ## Thành Viên:
 Nguyễn Đình Hùng  
 Nguyễn Đình Tạo  
