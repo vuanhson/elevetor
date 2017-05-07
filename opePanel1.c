@@ -80,6 +80,7 @@ activate(GtkApplication *app,
     gtk_container_add(GTK_CONTAINER(button_box), button3);
     // button4
     button4 = gtk_button_new_with_label("4");
+    
     g_signal_connect(button4, "clicked", G_CALLBACK(func4), NULL);
     gtk_container_add(GTK_CONTAINER(button_box), button4);
     // button5
@@ -116,10 +117,26 @@ void current_floor_change(int sigNo){
 			break;
 	}	
 }
+void direction_change(int sigNo){
+    switch(sigNo-SIGRTMIN){
+        case LIFT_UP:            
+            gtk_button_set_label(GTK_BUTTON(up_down_btn),"UP");
+            break;
+        case LIFT_STOP:            
+            gtk_button_set_label(GTK_BUTTON(up_down_btn),"STAND");
+            break;
+        case LIFT_DOWN:            
+            gtk_button_set_label(GTK_BUTTON(up_down_btn),"DOWN");
+            break;          
+        default:            
+            break;
+    }
+}
 int main(int argc, char *argv[])
 {
 	signal(SIGRTMIN+F1_ARRIVAL,current_floor_change);signal(SIGRTMIN+F2_ARRIVAL,current_floor_change);signal(SIGRTMIN+F3_ARRIVAL,current_floor_change);signal(SIGRTMIN+F4_ARRIVAL,current_floor_change);signal(SIGRTMIN+F5_ARRIVAL,current_floor_change);
-	pid_list=update_pid(OPE_PANE1);	
+	signal(SIGRTMIN+LIFT_UP,direction_change);signal(SIGRTMIN+LIFT_DOWN,direction_change);signal(SIGRTMIN+LIFT_STOP,direction_change);
+    pid_list=update_pid(OPE_PANE1);	
     printf("OPE_PANE1 %d\n",pid_list[OPE_PANE1] );
     printf("MNG %d\n",pid_list[LIFT_MNG] );	
 	GtkApplication *app;

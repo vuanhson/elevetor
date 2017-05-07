@@ -17,6 +17,6 @@ void release_shm(){
 void send_signal(pid_t pid,int sigNo){
 	if (pid>0) kill(pid,sigNo);
 	else {
-		printf("Pid not existed!\n");
+		//printf("Pid not existed!\n");
 	}
 }

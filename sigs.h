@@ -18,16 +18,22 @@ enum {LIFT_MNG,LIFT_CTR,LIFT_BODY,LIFT_SENSOR,OPE_PANE1,OPE_PANE2,OPE_PANE3,OPE_
 #define FALSE 0
 #define SUCCESS 1
 #define FAILED 0
+
 #define UP 1
+#define STAND 0
 #define DOWN -1
+
 #define SHARE_KEY 2468
+
 #define F1_CALL 11
 #define F2_CALL 12
 #define F3_CALL 13
 #define F4_CALL 14
 #define F5_CALL 15
+
 #define MOVING 9
 #define FINISHED 10
+
 #define LIFT_UP 6
 #define LIFT_DOWN 7
 #define LIFT_STOP 8
