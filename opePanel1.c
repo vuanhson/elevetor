@@ -52,6 +52,14 @@ static void
 activate(GtkApplication *app,
          gpointer user_data)
 {
+    // <-------------  For add stylesheet.css
+    GtkCssProvider* Provider = gtk_css_provider_new();
+    GdkDisplay* Display = gdk_display_get_default();
+    GdkScreen* Screen = gdk_display_get_default_screen(Display);
+
+    gtk_style_context_add_provider_for_screen(Screen, GTK_STYLE_PROVIDER(Provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
+    gtk_css_provider_load_from_path(GTK_CSS_PROVIDER(Provider), "stylesheet.css", NULL);
+    // End add stylesheet.css ---------------->
 
     window = gtk_application_window_new(app);
     gtk_window_set_title(GTK_WINDOW(window), window_title);
@@ -64,10 +72,12 @@ activate(GtkApplication *app,
     gtk_container_add(GTK_CONTAINER(main_box), button_box);
 
     up_down_btn = gtk_button_new_with_label("---");
+    gtk_widget_set_name(up_down_btn, "info_btn");
     gtk_widget_set_sensitive(up_down_btn, FALSE);
     gtk_container_add(GTK_CONTAINER(button_box), up_down_btn);
 
     current_floor_btn = gtk_button_new_with_label("---");
+    gtk_widget_set_name(current_floor_btn, "info_btn");
     gtk_widget_set_sensitive(current_floor_btn, FALSE);
     gtk_container_add(GTK_CONTAINER(button_box), current_floor_btn);
     // button 2
