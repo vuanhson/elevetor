@@ -22,8 +22,7 @@ call_func(GtkWidget *widget,
 {
     int this_floor=*(int*)data;
     g_print("Ban da click call_btn at floor: %d\n",this_floor-SIGRTMIN-10);
-    kill(pid_list[LIFT_MNG],this_floor);
-    set_status("default");
+    kill(pid_list[LIFT_MNG],this_floor);    
 }
 static void
 activate(GtkApplication *app,

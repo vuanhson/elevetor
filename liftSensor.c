@@ -15,20 +15,20 @@ int main(int argc, char const *argv[])
 		if(previous_position ^ pid_list[LIFT_POSITION]){
 			switch(pid_list[LIFT_POSITION]){			
 				case 15:			 
-				//printf("kill F1_ARRIVAL%d to %d \n",SIGRTMIN+F1_ARRIVAL,pid_list[LIFT_CTR]);
-				kill(pid_list[LIFT_CTR],SIGRTMIN+F1_ARRIVAL);break;
+				//printf("send_signal F1_ARRIVAL%d to %d \n",SIGRTMIN+F1_ARRIVAL,pid_list[LIFT_CTR]);
+				send_signal(pid_list[LIFT_CTR],SIGRTMIN+F1_ARRIVAL);break;
 				case 45:
-				//printf("kill F2_ARRIVAL%d to %d \n",SIGRTMIN+F2_ARRIVAL,pid_list[LIFT_CTR]);
-				kill(pid_list[LIFT_CTR],SIGRTMIN+F2_ARRIVAL);break;
+				//printf("send_signal F2_ARRIVAL%d to %d \n",SIGRTMIN+F2_ARRIVAL,pid_list[LIFT_CTR]);
+				send_signal(pid_list[LIFT_CTR],SIGRTMIN+F2_ARRIVAL);break;
 				case 75: 
-				//printf("kill F3_ARRIVAL%d to %d \n",SIGRTMIN+F3_ARRIVAL,pid_list[LIFT_CTR]);
-				kill(pid_list[LIFT_CTR],SIGRTMIN+F3_ARRIVAL);break;
+				//printf("send_signal F3_ARRIVAL%d to %d \n",SIGRTMIN+F3_ARRIVAL,pid_list[LIFT_CTR]);
+				send_signal(pid_list[LIFT_CTR],SIGRTMIN+F3_ARRIVAL);break;
 				case 105: 
-				//printf("kill F4_ARRIVAL%d to %d \n",SIGRTMIN+F4_ARRIVAL,pid_list[LIFT_CTR]);
-				kill(pid_list[LIFT_CTR],SIGRTMIN+F4_ARRIVAL);break;
+				//printf("send_signal F4_ARRIVAL%d to %d \n",SIGRTMIN+F4_ARRIVAL,pid_list[LIFT_CTR]);
+				send_signal(pid_list[LIFT_CTR],SIGRTMIN+F4_ARRIVAL);break;
 				case 135: 
-				//printf("kill F5_ARRIVAL%d to %d \n",SIGRTMIN+F5_ARRIVAL,pid_list[LIFT_CTR]);
-				kill(pid_list[LIFT_CTR],SIGRTMIN+F5_ARRIVAL);break;			
+				//printf("send_signal F5_ARRIVAL%d to %d \n",SIGRTMIN+F5_ARRIVAL,pid_list[LIFT_CTR]);
+				send_signal(pid_list[LIFT_CTR],SIGRTMIN+F5_ARRIVAL);break;			
 				default:break;
 			}
 			previous_position=pid_list[LIFT_POSITION];

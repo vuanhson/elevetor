@@ -13,7 +13,7 @@
 #include <time.h>
 
 enum {LIFT_MNG,LIFT_CTR,LIFT_BODY,LIFT_SENSOR,OPE_PANE1,OPE_PANE2,OPE_PANE3,OPE_PANE4,OPE_PANE5,LIFT_POSITION};
-#define CLOCK 500000
+#define CLOCK 250000
 #define TRUE 1
 #define FALSE 0
 #define SUCCESS 1
@@ -40,4 +40,6 @@ enum {LIFT_MNG,LIFT_CTR,LIFT_BODY,LIFT_SENSOR,OPE_PANE1,OPE_PANE2,OPE_PANE3,OPE_
 #define F5_ARRIVAL 5
 
 pid_t* update_pid(int i);
+void release_shm();
+void send_signal(pid_t pid,int sigNo);
 #endif

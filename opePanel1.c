@@ -13,40 +13,41 @@ GtkWidget *main_box;
 GtkWidget *up_down_btn;
 GtkWidget *current_floor_btn;
 char window_title[10],current_floor[10],current_label[5];
-// Thay doi trang thai len xuong cua thang may
-static void
-set_status(gchar *status){
-    gtk_button_set_label(GTK_BUTTON(up_down_btn), status);
-}
+
 static void
 func2(GtkWidget *widget,
       gpointer data)
 {
     g_print("Ban da click button2\n");
-    kill(pid_list[LIFT_MNG],SIGRTMIN+F2_CALL);
+    send_signal(pid_list[LIFT_MNG],SIGRTMIN+F2_CALL);
 }
 static void
 func3(GtkWidget *widget,
       gpointer data)
 {
     g_print("Ban da click button3\n");
-    kill(pid_list[LIFT_MNG],SIGRTMIN+F3_CALL);
+    send_signal(pid_list[LIFT_MNG],SIGRTMIN+F3_CALL);
 }
 static void
 func4(GtkWidget *widget,
       gpointer data)
 {
     g_print("Ban da click button4\n");
-    kill(pid_list[LIFT_MNG],SIGRTMIN+F4_CALL);
+    send_signal(pid_list[LIFT_MNG],SIGRTMIN+F4_CALL);
 }
 static void
 func5(GtkWidget *widget,
       gpointer data)
 {
     g_print("Ban da click button5\n");
-    kill(pid_list[LIFT_MNG],SIGRTMIN+F5_CALL);    
+    send_signal(pid_list[LIFT_MNG],SIGRTMIN+F5_CALL);    
 }
 
+static void quit(){
+    gtk_widget_destroy(window);
+    shmdt(pid_list);
+    release_shm();
+}
 static void
 activate(GtkApplication *app,
          gpointer user_data)
@@ -66,7 +67,7 @@ activate(GtkApplication *app,
     gtk_widget_set_sensitive(up_down_btn, FALSE);
     gtk_container_add(GTK_CONTAINER(button_box), up_down_btn);
 
-    current_floor_btn = gtk_button_new_with_label(current_floor);
+    current_floor_btn = gtk_button_new_with_label("---");
     gtk_widget_set_sensitive(current_floor_btn, FALSE);
     gtk_container_add(GTK_CONTAINER(button_box), current_floor_btn);
     // button 2
@@ -88,33 +89,28 @@ activate(GtkApplication *app,
 
      // close_btn
     close_btn = gtk_button_new_with_label("Close");
-    // g_signal_connect(close_btn, "clicked", G_CALLBACK(print_hello), NULL);
-    g_signal_connect_swapped(close_btn, "clicked", G_CALLBACK(gtk_widget_destroy), window);
+    g_signal_connect(close_btn, "clicked", G_CALLBACK(quit), NULL);
+    //g_signal_connect_swapped(close_btn, "clicked", G_CALLBACK(gtk_widget_destroy), window);
     gtk_container_add(GTK_CONTAINER(button_box), close_btn);
     // show all widget
     gtk_widget_show_all(window);
 }
 void current_floor_change(int sigNo){
 	switch(sigNo-SIGRTMIN){
-		case F1_ARRIVAL:
-			puts("1");
-			//gtk_button_set_label(GTK_BUTTON(current_floor_btn),"1");
+		case F1_ARRIVAL:			
+			gtk_button_set_label(GTK_BUTTON(current_floor_btn),"1");
 			break;
-		case F2_ARRIVAL:
-			puts("2");
-			//gtk_button_set_label(GTK_BUTTON(current_floor_btn),"2");
+		case F2_ARRIVAL:			
+			gtk_button_set_label(GTK_BUTTON(current_floor_btn),"2");
 			break;
-		case F3_ARRIVAL:
-			puts("3");
-			//gtk_button_set_label(GTK_BUTTON(current_floor_btn),"3");
+		case F3_ARRIVAL:			
+			gtk_button_set_label(GTK_BUTTON(current_floor_btn),"3");
 			break;
-		case F4_ARRIVAL:
-			puts("4");
-			//gtk_button_set_label(GTK_BUTTON(current_floor_btn),"4");
+		case F4_ARRIVAL:			
+			gtk_button_set_label(GTK_BUTTON(current_floor_btn),"4");
 			break;
-		case F5_ARRIVAL:
-			puts("5");
-			//gtk_button_set_label(GTK_BUTTON(current_floor_btn),"5");
+		case F5_ARRIVAL:			
+			gtk_button_set_label(GTK_BUTTON(current_floor_btn),"5");
 			break;	
 		default:			
 			break;
@@ -124,17 +120,14 @@ int main(int argc, char *argv[])
 {
 	signal(SIGRTMIN+F1_ARRIVAL,current_floor_change);signal(SIGRTMIN+F2_ARRIVAL,current_floor_change);signal(SIGRTMIN+F3_ARRIVAL,current_floor_change);signal(SIGRTMIN+F4_ARRIVAL,current_floor_change);signal(SIGRTMIN+F5_ARRIVAL,current_floor_change);
 	pid_list=update_pid(OPE_PANE1);	
-	
+    printf("OPE_PANE1 %d\n",pid_list[OPE_PANE1] );
+    printf("MNG %d\n",pid_list[LIFT_MNG] );	
 	GtkApplication *app;
     int status;
-    strcpy(window_title,"Tầng 1");
-    strcpy(current_floor,"");
+    strcpy(window_title,"Tầng 1");    
     app = gtk_application_new("org.gtk.tang1", G_APPLICATION_FLAGS_NONE);
     g_signal_connect(app, "activate", G_CALLBACK(activate), NULL);
-
-    status = g_application_run(G_APPLICATION(app), argc, argv);
-    
+    status = g_application_run(G_APPLICATION(app), 0, NULL);
     g_object_unref(app);
-
     return status;
 }

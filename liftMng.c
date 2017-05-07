@@ -24,14 +24,14 @@ void up_request(int sigNo){
 	printf("Request up to floor %d\n",floor);	
 }
 void notifications(int sigNo){
-	kill(pid_list[OPE_PANE1],sigNo);
-	// kill(pid_list[OPE_PANE2],sigNo);
-	// kill(pid_list[OPE_PANE3],sigNo);
-	// kill(pid_list[OPE_PANE4],sigNo);
-	// kill(pid_list[OPE_PANE5],sigNo);
+	send_signal(pid_list[OPE_PANE1],sigNo);
+	// send_signal(pid_list[OPE_PANE2],sigNo);
+	// send_signal(pid_list[OPE_PANE3],sigNo);
+	// send_signal(pid_list[OPE_PANE4],sigNo);
+	// send_signal(pid_list[OPE_PANE5],sigNo);
 }
 void lift_arrival(int sigNo){
-	notifications(sigNo);
+	//notifications(sigNo);
 	switch(sigNo-SIGRTMIN){
 		case F1_ARRIVAL:			
 			puts("Lift stopped!");
@@ -65,7 +65,7 @@ int main(int argc, char const *argv[])
 			//show();
 			if(sigNo>0) {
 				lift_is_moving=TRUE;
-				kill(pid_list[LIFT_CTR],sigNo);
+				send_signal(pid_list[LIFT_CTR],sigNo);
 			}
 		}
 		else if(++count%5==0) puts("Lift moving...");

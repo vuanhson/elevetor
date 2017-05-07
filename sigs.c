@@ -10,3 +10,13 @@ pid_t* update_pid(int i){
 	shmpointer[i]=getpid();
 	return shmpointer;
 }
+void release_shm(){
+	int shmid = shmget(SHARE_KEY,16*sizeof(pid_t),IPC_CREAT);
+	shmctl(shmid,IPC_RMID,NULL);
+}
+void send_signal(pid_t pid,int sigNo){
+	if (pid>0) kill(pid,sigNo);
+	else {
+		printf("Pid not existed!\n");
+	}
+}
