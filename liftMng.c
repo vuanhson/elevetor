@@ -54,7 +54,7 @@ int main(int argc, char const *argv[])
 	signal(SIGRTMIN+MOVING,lift_arrival);signal(SIGRTMIN+F1_ARRIVAL,lift_arrival);signal(SIGRTMIN+F2_ARRIVAL,lift_arrival);signal(SIGRTMIN+F3_ARRIVAL,lift_arrival);signal(SIGRTMIN+F4_ARRIVAL,lift_arrival);signal(SIGRTMIN+F5_ARRIVAL,lift_arrival);
 	signal(SIGRTMIN+LIFT_UP,up_or_down);signal(SIGRTMIN+LIFT_DOWN,up_or_down);signal(SIGRTMIN+LIFT_STOP,up_or_down);
 	pid_list=update_pid(LIFT_MNG);
-	printf("Mng: %d\n",getpid());
+	printf("mng_process_id: %d\n",getpid());
 	int sigNo,count=0;	
 	while(1){
 		sleep(1);
