@@ -15,21 +15,29 @@ void up_request(int sigNo){
 	}		
 }
 void where_is_it(int sigNo){// hàm này báo thang máy đang ở tầng nào đến các tầng:
-	send_signal(pid_list[OPE_PANE1],sigNo);
-	send_signal(pid_list[OPE_PANE2],sigNo);
-	send_signal(pid_list[OPE_PANE3],sigNo);
-	send_signal(pid_list[OPE_PANE4],sigNo);
-	send_signal(pid_list[OPE_PANE5],sigNo);
+	pid_t pid;
+	if((pid=fork())==0){
+		send_signal(pid_list[OPE_PANE1],sigNo);
+		send_signal(pid_list[OPE_PANE2],sigNo);
+		send_signal(pid_list[OPE_PANE3],sigNo);
+		send_signal(pid_list[OPE_PANE4],sigNo);
+		send_signal(pid_list[OPE_PANE5],sigNo);
+		exit(1);
+	}	
 }
 void up_or_down(int sigNo){// hàm này cập nhật hướng di chuyển của thang máy, báo cho các tầng biết:
-	send_signal(pid_list[OPE_PANE1],sigNo);
-	send_signal(pid_list[OPE_PANE2],sigNo);
-	send_signal(pid_list[OPE_PANE3],sigNo);
-	send_signal(pid_list[OPE_PANE4],sigNo);
-	send_signal(pid_list[OPE_PANE5],sigNo);
+	pid_t pid;
+	if((pid=fork())==0){
+		send_signal(pid_list[OPE_PANE1],sigNo);
+		send_signal(pid_list[OPE_PANE2],sigNo);
+		send_signal(pid_list[OPE_PANE3],sigNo);
+		send_signal(pid_list[OPE_PANE4],sigNo);
+		send_signal(pid_list[OPE_PANE5],sigNo);
+		exit(1);
+	}
 }
 void lift_arrival(int sigNo){//  hàm này xử lí ngắt nhận được từ liftCtrl:
-	// where_is_it(sigNo);
+	where_is_it(sigNo);
 	int sigNumber;
 	switch(sigNo-SIGRTMIN){
 		case F1_ARRIVAL:			
@@ -59,8 +67,10 @@ int main(int argc, char const *argv[])
 {
 	signal(SIGRTMIN+F2_CALL,up_request);	signal(SIGRTMIN+F3_CALL,up_request);	signal(SIGRTMIN+F4_CALL,up_request);	signal(SIGRTMIN+F5_CALL,up_request);
 	signal(SIGRTMIN+F1_ARRIVAL,lift_arrival);signal(SIGRTMIN+F2_ARRIVAL,lift_arrival);signal(SIGRTMIN+F3_ARRIVAL,lift_arrival);signal(SIGRTMIN+F4_ARRIVAL,lift_arrival);signal(SIGRTMIN+F5_ARRIVAL,lift_arrival);
-	//signal(SIGRTMIN+LIFT_UP,up_or_down);signal(SIGRTMIN+LIFT_DOWN,up_or_down);signal(SIGRTMIN+LIFT_STOP,up_or_down);
+	signal(SIGRTMIN+LIFT_UP,up_or_down);signal(SIGRTMIN+LIFT_DOWN,up_or_down);signal(SIGRTMIN+LIFT_STOP,up_or_down);
+	signal(SIGCHLD, SIG_IGN);
 	pid_list=update_pid(LIFT_MNG);
+	setpgid(pid_list[LIFT_MNG],0);
 	printf("mng_process_id: %d\n",getpid());		
 
 	//Make FIFO file

@@ -1,10 +1,20 @@
 #include "sigs.h"
 
 pid_t *pid_list,sensor_process_id,body_process_id;
-int des=0;
+int des=1,current_floor=1;
 // Hàm xử lí ngắt khi nhận lệnh yêu cầu chuyển hàng từ liftMng:
 void up_request(int sigNo){	
 	//printf("up_request_get %d \n",sigNo );
+	// des=sigNo-SIGRTMIN-F1_CALL+1;
+	// printf("to floor: %d\n", des);
+	// if(current_floor<des){
+	// 	send_signal(body_process_id,SIGRTMIN+LIFT_UP);
+	//  	//send_signal(pid_list[LIFT_MNG],SIGRTMIN+LIFT_UP);
+	// }
+	// if(current_floor>des){
+	// 	send_signal(body_process_id,SIGRTMIN+LIFT_DOWN);
+	//  	//send_signal(pid_list[LIFT_MNG],SIGRTMIN+LIFT_DOWN);
+	// }
 	switch(sigNo-SIGRTMIN){
 		case F1_CALL: des=1;
 		printf("Back to floor %d\n",des);
@@ -31,7 +41,7 @@ void up_request(int sigNo){
 		send_signal(body_process_id,SIGRTMIN+LIFT_UP);
 		// send_signal(pid_list[LIFT_MNG],SIGRTMIN+LIFT_UP);
 		break;
-		default: break;
+		default: break;		
 	}
 	
 }
@@ -39,7 +49,22 @@ void up_request(int sigNo){
 void sensor_change(int sigNo){	
 	// printf("sensor_change_get %d \n",sigNo );
 	int i;
-	send_signal(pid_list[LIFT_MNG],sigNo);	
+	send_signal(pid_list[LIFT_MNG],sigNo);
+	// current_floor=sigNo-SIGRTMIN-F1_ARRIVAL+1;
+	// if(des==current_floor){
+	// 	send_signal(body_process_id,SIGRTMIN+LIFT_STOP);
+	// 	//send_signal(pid_list[LIFT_MNG],SIGRTMIN+LIFT_STOP);
+	// 	sleep(WAIT_TIME);
+	// 	printf("chuyen hang o tang %d\n",des );
+	// 	if(des!=1){
+	// 		des=1;
+	// 		send_signal(body_process_id,SIGRTMIN+LIFT_DOWN);
+	// 		//send_signal(pid_list[LIFT_MNG],SIGRTMIN+LIFT_DOWN);
+	// 	}
+	// 	else{
+	// 		puts("Finish move");
+	// 	}
+	// }		
 	switch(sigNo-SIGRTMIN){
 		case F1_ARRIVAL:		
 		if(des==1){
@@ -53,7 +78,6 @@ void sensor_change(int sigNo){
 		case F4_ARRIVAL:		
 		case F5_ARRIVAL:
 			i=sigNo-SIGRTMIN-F1_ARRIVAL+1;			
-			//send_signal(pid_list[LIFT_MNG],sigNo);
 			if(des==i){
 				send_signal(body_process_id,SIGRTMIN+LIFT_STOP);
 				//send_signal(pid_list[LIFT_MNG],SIGRTMIN+LIFT_STOP);
@@ -132,7 +156,7 @@ void body_process_run(){// đây là hàm thực hiện công việc chính củ
 	
 	pid_list[LIFT_POSITION]=15;// khởi tạo vị trí ban đầu cho body thang máy
 	//printf("Body: %d of  Ctrl: %d \n",getpid(),control_process_id );
-	pid_t last_value=0;// dont care, đưa thêm vào để debug trong khi làm.
+	pid_t last_value=15;// dont care, đưa thêm vào để debug trong khi làm.
 	while(1){		
 		usleep(CLOCK);
 		switch(action){

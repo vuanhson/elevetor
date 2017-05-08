@@ -135,6 +135,7 @@ int main(int argc, char *argv[])
 		case 2:
         
 		pid_list=update_pid(OPE_PANE2);
+        setpgid(pid_list[OPE_PANE2],pid_list[LIFT_MNG]);
 		this_floor=SIGRTMIN+F2_CALL;
 		strcpy(window_title,"Tầng 2");
 		app = gtk_application_new("org.gtk.tang2", G_APPLICATION_FLAGS_NONE);
@@ -142,6 +143,7 @@ int main(int argc, char *argv[])
 		case 3:
         
 		pid_list=update_pid(OPE_PANE3);
+        setpgid(pid_list[OPE_PANE3],pid_list[LIFT_MNG]);
 		this_floor=SIGRTMIN+F3_CALL;
 		strcpy(window_title,"Tầng 3");
 		app = gtk_application_new("org.gtk.tang3", G_APPLICATION_FLAGS_NONE);
@@ -149,13 +151,15 @@ int main(int argc, char *argv[])
 		case 4:
         
 		pid_list=update_pid(OPE_PANE4);
+        setpgid(pid_list[OPE_PANE4],pid_list[LIFT_MNG]);
 		this_floor=SIGRTMIN+F4_CALL;
 		strcpy(window_title,"Tầng 4");
 		app = gtk_application_new("org.gtk.tang4", G_APPLICATION_FLAGS_NONE);
 		break;
 		case 5:
         
-		pid_list=update_pid(OPE_PANE5); 
+		pid_list=update_pid(OPE_PANE5);
+        setpgid(pid_list[OPE_PANE5],pid_list[LIFT_MNG]); 
 		this_floor=SIGRTMIN+F5_CALL;
 		strcpy(window_title,"Tầng 5");
 		app = gtk_application_new("org.gtk.tang5", G_APPLICATION_FLAGS_NONE);

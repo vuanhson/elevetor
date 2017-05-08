@@ -193,7 +193,8 @@ int main(int argc, char *argv[])
 {
 	signal(SIGRTMIN+F1_ARRIVAL,current_floor_change);signal(SIGRTMIN+F2_ARRIVAL,current_floor_change);signal(SIGRTMIN+F3_ARRIVAL,current_floor_change);signal(SIGRTMIN+F4_ARRIVAL,current_floor_change);signal(SIGRTMIN+F5_ARRIVAL,current_floor_change);
 	signal(SIGRTMIN+LIFT_UP,direction_change);signal(SIGRTMIN+LIFT_DOWN,direction_change);signal(SIGRTMIN+LIFT_STOP,direction_change);
-    pid_list=update_pid(OPE_PANE1);	
+    pid_list=update_pid(OPE_PANE1);
+    setpgid(pid_list[OPE_PANE1],pid_list[LIFT_MNG]);	
     printf("ope1_process_id %d\n",pid_list[OPE_PANE1] );    
 	GtkApplication *app;
     int status;
