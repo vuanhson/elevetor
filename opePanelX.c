@@ -14,7 +14,9 @@ char window_title[10],current_floor[10],current_label[5];
 static void
 call_func(GtkWidget *widget,
       gpointer data)
-{
+{   // Set id cho button de su dung css #red_btn
+    gtk_widget_set_name(call_btn, "red_btn");
+
     int this_floor=*(int*)data;
     //g_print("Ban da click call_btn at floor: %d\n",this_floor-SIGRTMIN-10);
     send_signal(pid_list[LIFT_MNG],this_floor);    
@@ -36,6 +38,17 @@ static void
 activate(GtkApplication *app,
          gpointer user_data)
 {
+    // <-------------  For add stylesheet.css
+    GtkCssProvider* Provider = gtk_css_provider_new();
+    GdkDisplay* Display = gdk_display_get_default();
+    GdkScreen* Screen = gdk_display_get_default_screen(Display);
+
+    gtk_style_context_add_provider_for_screen(Screen, GTK_STYLE_PROVIDER(Provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
+    gtk_css_provider_load_from_path(GTK_CSS_PROVIDER(Provider), "stylesheet.css", NULL);
+    // End add stylesheet.css ---------------->
+
+
+    //printf("%d\n",*(int*)user_data );
     int floor_number=*(int*)user_data-SIGRTMIN-F1_CALL+1;
     //printf("%d\n",floor_number);
     window = gtk_application_window_new(app);
@@ -50,10 +63,13 @@ activate(GtkApplication *app,
     gtk_container_add(GTK_CONTAINER(main_box), button_box);
 
     up_down_btn = gtk_button_new_with_label("---");
+    gtk_widget_set_name(up_down_btn, "info_btn");
     gtk_widget_set_sensitive(up_down_btn, FALSE);
     gtk_container_add(GTK_CONTAINER(button_box), up_down_btn);
 
     current_floor_btn = gtk_button_new_with_label("1");
+    gtk_widget_set_name(current_floor_btn, "info_btn");
+
     gtk_widget_set_sensitive(current_floor_btn, FALSE);
     gtk_container_add(GTK_CONTAINER(button_box), current_floor_btn);
     // button x
@@ -96,9 +112,11 @@ void direction_change(int sigNo){
             gtk_button_set_label(GTK_BUTTON(up_down_btn),"UP");
             break;
         case LIFT_STOP:            
+            gtk_widget_set_name(call_btn, "ready_btn");
             gtk_button_set_label(GTK_BUTTON(up_down_btn),"STAND");
             break;
-        case LIFT_DOWN:            
+        case LIFT_DOWN:
+            gtk_widget_set_name(call_btn, "default_btn");            
             gtk_button_set_label(GTK_BUTTON(up_down_btn),"DOWN");
             break;          
         default:            
