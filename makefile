@@ -1,4 +1,5 @@
 all:
+	rm -f *.o main mng ctr op1 opx
 	gcc -c sigs.c
 	gcc -o main main.c sigs.o
 	gcc -o mng liftMng.c sigs.o

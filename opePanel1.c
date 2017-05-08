@@ -20,40 +20,40 @@ func2(GtkWidget *widget,
       gpointer data)
 {
     //g_print("Ban da click button2\n");
-    if(strcmp(gtk_widget_get_name(button2),"red_btn")!=0){
-        gtk_widget_set_name(button2, "red_btn");
+    // if(strcmp(gtk_widget_get_name(button2),"red_btn")!=0){
+        // gtk_widget_set_name(button2, "red_btn");
         send_signal(pid_list[LIFT_MNG],SIGRTMIN+F2_CALL);
-    }    
+    // }    
 }
 static void
 func3(GtkWidget *widget,
       gpointer data)
 {
     //g_print("Ban da click button3\n");
-    if(strcmp(gtk_widget_get_name(button3),"red_btn")!=0){
-        gtk_widget_set_name(button3, "red_btn");
+    // if(strcmp(gtk_widget_get_name(button3),"red_btn")!=0){
+        // gtk_widget_set_name(button3, "red_btn");
         send_signal(pid_list[LIFT_MNG],SIGRTMIN+F3_CALL);
-    }
+    // }
 }
 static void
 func4(GtkWidget *widget,
       gpointer data)
 {
     //g_print("Ban da click button4\n");
-    if(strcmp(gtk_widget_get_name(button4),"red_btn")!=0){
-        gtk_widget_set_name(button4, "red_btn");
+    // if(strcmp(gtk_widget_get_name(button4),"red_btn")!=0){
+        // gtk_widget_set_name(button4, "red_btn");
         send_signal(pid_list[LIFT_MNG],SIGRTMIN+F4_CALL);
-    }
+    // }
 }
 static void
 func5(GtkWidget *widget,
       gpointer data)
 {
     //g_print("Ban da click button5\n");
-    if(strcmp(gtk_widget_get_name(button5),"red_btn")!=0){
-        gtk_widget_set_name(button5, "red_btn");
+    // if(strcmp(gtk_widget_get_name(button5),"red_btn")!=0){
+        // gtk_widget_set_name(button5, "red_btn");
         send_signal(pid_list[LIFT_MNG],SIGRTMIN+F5_CALL); 
-    }   
+    // }   
 }
 
 static void quit(){    

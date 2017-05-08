@@ -9,27 +9,27 @@ void up_request(int sigNo){
 		case F1_CALL: des=1;
 		printf("Back to floor %d\n",des);
 		send_signal(body_process_id,SIGRTMIN+LIFT_DOWN);
-		send_signal(pid_list[LIFT_MNG],SIGRTMIN+LIFT_DOWN);
+		// send_signal(pid_list[LIFT_MNG],SIGRTMIN+LIFT_DOWN);
 		break;
 		case F2_CALL: des=2;
 		printf("Request up to floor %d\n",des);
 		send_signal(body_process_id,SIGRTMIN+LIFT_UP);
-		send_signal(pid_list[LIFT_MNG],SIGRTMIN+LIFT_UP);
+		// send_signal(pid_list[LIFT_MNG],SIGRTMIN+LIFT_UP);
 		break;
 		case F3_CALL: des=3;
 		printf("Request up to floor %d\n",des);
 		send_signal(body_process_id,SIGRTMIN+LIFT_UP);
-		send_signal(pid_list[LIFT_MNG],SIGRTMIN+LIFT_UP);
+		// send_signal(pid_list[LIFT_MNG],SIGRTMIN+LIFT_UP);
 		break;
 		case F4_CALL: des=4;
 		printf("Request up to floor %d\n",des);
 		send_signal(body_process_id,SIGRTMIN+LIFT_UP);
-		send_signal(pid_list[LIFT_MNG],SIGRTMIN+LIFT_UP);
+		// send_signal(pid_list[LIFT_MNG],SIGRTMIN+LIFT_UP);
 		break;
 		case F5_CALL: des=5;
 		printf("Request up to floor %d\n",des);
 		send_signal(body_process_id,SIGRTMIN+LIFT_UP);
-		send_signal(pid_list[LIFT_MNG],SIGRTMIN+LIFT_UP);
+		// send_signal(pid_list[LIFT_MNG],SIGRTMIN+LIFT_UP);
 		break;
 		default: break;
 	}
@@ -38,32 +38,30 @@ void up_request(int sigNo){
 // Hàm xử lí ngắt khi nhận được tín hiệu(từ liftSensor) báo thang máy đến một tầng nào đó:
 void sensor_change(int sigNo){	
 	// printf("sensor_change_get %d \n",sigNo );
-	int i;	
+	int i;
+	send_signal(pid_list[LIFT_MNG],sigNo);	
 	switch(sigNo-SIGRTMIN){
 		case F1_ARRIVAL:		
-		send_signal(pid_list[LIFT_MNG],SIGRTMIN+F1_ARRIVAL);
 		if(des==1){
 			send_signal(body_process_id,SIGRTMIN+LIFT_STOP);			
 			puts("Finish move");			
 		}
 		// else send_signal(pid_list[LIFT_MNG],SIGRTMIN+MOVING);
 		break;
-		case F2_ARRIVAL:
-		
-		case F3_ARRIVAL:
-		
-		case F4_ARRIVAL:
-		
+		case F2_ARRIVAL:		
+		case F3_ARRIVAL:		
+		case F4_ARRIVAL:		
 		case F5_ARRIVAL:
 			i=sigNo-SIGRTMIN-F1_ARRIVAL+1;			
-			send_signal(pid_list[LIFT_MNG],sigNo);
+			//send_signal(pid_list[LIFT_MNG],sigNo);
 			if(des==i){
 				send_signal(body_process_id,SIGRTMIN+LIFT_STOP);
-				send_signal(pid_list[LIFT_MNG],SIGRTMIN+LIFT_STOP);
-				sleep(3);
+				//send_signal(pid_list[LIFT_MNG],SIGRTMIN+LIFT_STOP);
+				sleep(WAIT_TIME);
+				printf("chuyen hang o tang %d\n",des );
 				des=1;
 				send_signal(body_process_id,SIGRTMIN+LIFT_DOWN);
-				send_signal(pid_list[LIFT_MNG],SIGRTMIN+LIFT_DOWN);			
+				//send_signal(pid_list[LIFT_MNG],SIGRTMIN+LIFT_DOWN);			
 			}
 			// else send_signal(pid_list[LIFT_MNG],SIGRTMIN+MOVING);
 			break;		
@@ -134,7 +132,7 @@ void body_process_run(){// đây là hàm thực hiện công việc chính củ
 	
 	pid_list[LIFT_POSITION]=15;// khởi tạo vị trí ban đầu cho body thang máy
 	//printf("Body: %d of  Ctrl: %d \n",getpid(),control_process_id );
-	//pid_t last_value=0;// dont care, đưa thêm vào để debug trong khi làm.
+	pid_t last_value=0;// dont care, đưa thêm vào để debug trong khi làm.
 	while(1){		
 		usleep(CLOCK);
 		switch(action){
@@ -154,10 +152,10 @@ void body_process_run(){// đây là hàm thực hiện công việc chính củ
 				break;
 		}
 		// dont care, đoạn này để view độ cao của body thang máy thay đổi thế nào thôi:
-		// if(last_value!=pid_list[LIFT_POSITION]) {
-		// 	printf("Height: %.1f metter\n",pid_list[LIFT_POSITION]/10.0);
-		// 	last_value=pid_list[LIFT_POSITION];
-		// }				
+		if(last_value!=pid_list[LIFT_POSITION]) {
+			printf("Height: %.1f metter\n",pid_list[LIFT_POSITION]/10.0);
+			last_value=pid_list[LIFT_POSITION];
+		}				
 	}
 }// end of body_process_run
 

@@ -13,7 +13,7 @@
 #include <time.h>
 
 enum {LIFT_MNG,LIFT_CTR,OPE_PANE1,OPE_PANE2,OPE_PANE3,OPE_PANE4,OPE_PANE5,LIFT_POSITION};
-#define CLOCK 500000
+#define CLOCK 200000
 #define TRUE 1
 #define FALSE 0
 #define SUCCESS 1
@@ -45,7 +45,15 @@ enum {LIFT_MNG,LIFT_CTR,OPE_PANE1,OPE_PANE2,OPE_PANE3,OPE_PANE4,OPE_PANE5,LIFT_P
 #define F4_ARRIVAL 4
 #define F5_ARRIVAL 5
 
+#define WAIT_TIME 1
 pid_t* update_pid(int i);
 void release_shm();
-void send_signal(pid_t pid,int sigNo);
+int send_signal(pid_t pid,int sigNo);
+
+#include <sys/stat.h>
+#include <sys/errno.h>
+#include <sys/fcntl.h>
+
+#define FIFO_FILE_PATH "queue"
+#define BUFF_SIZE 256
 #endif
