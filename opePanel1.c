@@ -2,6 +2,7 @@
 #include <gtk/gtk.h>
 
 pid_t* pid_list;
+int current_floor_number=1;
 GtkWidget *window;
 GtkWidget *button2;
 GtkWidget *button3;
@@ -19,28 +20,40 @@ func2(GtkWidget *widget,
       gpointer data)
 {
     //g_print("Ban da click button2\n");
-    send_signal(pid_list[LIFT_MNG],SIGRTMIN+F2_CALL);
+    if(strcmp(gtk_widget_get_name(button2),"red_btn")!=0){
+        gtk_widget_set_name(button2, "red_btn");
+        send_signal(pid_list[LIFT_MNG],SIGRTMIN+F2_CALL);
+    }    
 }
 static void
 func3(GtkWidget *widget,
       gpointer data)
 {
     //g_print("Ban da click button3\n");
-    send_signal(pid_list[LIFT_MNG],SIGRTMIN+F3_CALL);
+    if(strcmp(gtk_widget_get_name(button3),"red_btn")!=0){
+        gtk_widget_set_name(button3, "red_btn");
+        send_signal(pid_list[LIFT_MNG],SIGRTMIN+F3_CALL);
+    }
 }
 static void
 func4(GtkWidget *widget,
       gpointer data)
 {
     //g_print("Ban da click button4\n");
-    send_signal(pid_list[LIFT_MNG],SIGRTMIN+F4_CALL);
+    if(strcmp(gtk_widget_get_name(button4),"red_btn")!=0){
+        gtk_widget_set_name(button4, "red_btn");
+        send_signal(pid_list[LIFT_MNG],SIGRTMIN+F4_CALL);
+    }
 }
 static void
 func5(GtkWidget *widget,
       gpointer data)
 {
     //g_print("Ban da click button5\n");
-    send_signal(pid_list[LIFT_MNG],SIGRTMIN+F5_CALL);    
+    if(strcmp(gtk_widget_get_name(button5),"red_btn")!=0){
+        gtk_widget_set_name(button5, "red_btn");
+        send_signal(pid_list[LIFT_MNG],SIGRTMIN+F5_CALL); 
+    }   
 }
 
 static void quit(){    
@@ -117,6 +130,7 @@ activate(GtkApplication *app,
     gtk_widget_show_all(window);
 }
 void current_floor_change(int sigNo){
+    current_floor_number=sigNo-SIGRTMIN;
 	switch(sigNo-SIGRTMIN){
 		case F1_ARRIVAL:			
 			gtk_button_set_label(GTK_BUTTON(current_floor_btn),"1");
@@ -144,6 +158,29 @@ void direction_change(int sigNo){
             break;
         case LIFT_STOP:            
             gtk_button_set_label(GTK_BUTTON(up_down_btn),"STAND");
+            switch(current_floor_number+1){
+                case 2:
+                    if(strcmp(gtk_widget_get_name(button2),"red_btn")==0){
+                        gtk_widget_set_name(button2, "default_btn");                         
+                    } 
+                break;
+                case 3:
+                    if(strcmp(gtk_widget_get_name(button3),"red_btn")==0){
+                        gtk_widget_set_name(button3, "default_btn");                         
+                    } 
+                break;
+                case 4:
+                    if(strcmp(gtk_widget_get_name(button4),"red_btn")==0){
+                        gtk_widget_set_name(button4, "default_btn");                         
+                    } 
+                break;
+                case 5:
+                    if(strcmp(gtk_widget_get_name(button5),"red_btn")==0){
+                        gtk_widget_set_name(button5, "default_btn");                         
+                    } 
+                break;
+                default:break;
+            }
             break;
         case LIFT_DOWN:            
             gtk_button_set_label(GTK_BUTTON(up_down_btn),"DOWN");

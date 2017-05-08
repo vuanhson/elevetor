@@ -3,19 +3,18 @@ color: green;
 font-style: normal;
 font-weight: bold;
 font-size: 15px;
-border-radius: 15px;
+border-radius: 5px;
 }
 #info_btn{
   color:black;
 }
 #default_btn{
 	color:green;
+	background: white;
 }
 #red_btn{
-  
-    color: red;
-    
+	background: red;    
 }
 #ready_btn{
-	color: blue;
+	background: blue;
 }

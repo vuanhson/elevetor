@@ -2,7 +2,7 @@
 #include <gtk/gtk.h>
 
 pid_t* pid_list;
-
+int my_floor_number,current_floor_number;
 GtkWidget *window;
 GtkWidget *call_btn;
 GtkWidget *close_btn;
@@ -46,15 +46,12 @@ activate(GtkApplication *app,
     gtk_style_context_add_provider_for_screen(Screen, GTK_STYLE_PROVIDER(Provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
     gtk_css_provider_load_from_path(GTK_CSS_PROVIDER(Provider), "stylesheet.css", NULL);
     // End add stylesheet.css ---------------->
-
-
-    //printf("%d\n",*(int*)user_data );
-    int floor_number=*(int*)user_data-SIGRTMIN-F1_CALL+1;
-    //printf("%d\n",floor_number);
+    
+    //printf("%d\n",my_floor_number);
     window = gtk_application_window_new(app);
     gtk_window_set_title(GTK_WINDOW(window), window_title);
     gtk_window_set_default_size(GTK_WINDOW(window), 150, 100);
-    gtk_window_move(GTK_WINDOW(window),150*(floor_number-1),100);
+    gtk_window_move(GTK_WINDOW(window),150*(my_floor_number-1),100);
     //   Add Vbox
     main_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
     gtk_container_add(GTK_CONTAINER(window), main_box);
@@ -76,16 +73,12 @@ activate(GtkApplication *app,
     call_btn = gtk_button_new_with_label("CALL");
     g_signal_connect(call_btn, "clicked", G_CALLBACK(call_func), user_data);
     gtk_container_add(GTK_CONTAINER(button_box), call_btn);
-
-     // close_btn
-    close_btn = gtk_button_new_with_label("Close");
-    g_signal_connect(close_btn, "clicked", G_CALLBACK(quit), NULL);
-    //g_signal_connect_swapped(close_btn, "clicked", G_CALLBACK(gtk_widget_destroy), window);
-    gtk_container_add(GTK_CONTAINER(button_box), close_btn);
+    
     // show all widget
     gtk_widget_show_all(window);
 }
 void current_floor_change(int sigNo){
+    current_floor_number=sigNo-SIGRTMIN;    
     switch(sigNo-SIGRTMIN){
         case F1_ARRIVAL:            
             gtk_button_set_label(GTK_BUTTON(current_floor_btn),"1");
@@ -108,15 +101,19 @@ void current_floor_change(int sigNo){
 }
 void direction_change(int sigNo){
     switch(sigNo-SIGRTMIN){
-        case LIFT_UP:            
+        case LIFT_UP:
+            if(strcmp(gtk_widget_get_name(call_btn),"ready_btn")==0)
+               gtk_widget_set_name(call_btn, "default_btn");              
             gtk_button_set_label(GTK_BUTTON(up_down_btn),"UP");
             break;
-        case LIFT_STOP:            
-            gtk_widget_set_name(call_btn, "ready_btn");
+        case LIFT_STOP:
+            if(current_floor_number+1==my_floor_number)
+              gtk_widget_set_name(call_btn, "ready_btn");              
             gtk_button_set_label(GTK_BUTTON(up_down_btn),"STAND");
             break;
         case LIFT_DOWN:
-            gtk_widget_set_name(call_btn, "default_btn");            
+            if(strcmp(gtk_widget_get_name(call_btn),"ready_btn")==0)
+               gtk_widget_set_name(call_btn, "default_btn");            
             gtk_button_set_label(GTK_BUTTON(up_down_btn),"DOWN");
             break;          
         default:            
@@ -133,7 +130,8 @@ int main(int argc, char *argv[])
 		printf("Usage: opx FLOOR_NUMBER\n"); exit(0);
 	}		
 	int this_floor;
-	switch(atoi(argv[1])){
+    my_floor_number=atoi(argv[1]);
+	switch(my_floor_number){
 		case 2:
         
 		pid_list=update_pid(OPE_PANE2);
