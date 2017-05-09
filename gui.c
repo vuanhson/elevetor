@@ -1,7 +1,19 @@
 #include <gtk/gtk.h>
 
+GdkPixbuf *create_pixbuf(const gchar * filename) {
+    
+   GdkPixbuf *pixbuf;
+   GError *error = NULL;
+   pixbuf = gdk_pixbuf_new_from_file(filename, &error);
+   
+   if (!pixbuf) {
+       
+      fprintf(stderr, "%s\n", error->message);
+      g_error_free(error);
+   }
 
-
+   return pixbuf;
+}
 static void
 activate (GtkApplication *app,
           gpointer        user_data)
@@ -22,11 +34,13 @@ activate (GtkApplication *app,
   window = gtk_application_window_new (app);
   gtk_window_set_title (GTK_WINDOW (window), "Elevator Management Panel");
   gtk_window_set_default_size (GTK_WINDOW (window), 200, 200);
+  gtk_window_move(GTK_WINDOW(window),250,450);    
+  gtk_window_set_icon(GTK_WINDOW(window), create_pixbuf("icon"));
   //create list and attach to windows
   window_grid = gtk_grid_new();
   gtk_container_add (GTK_CONTAINER (window), window_grid);
   //create Label
-  label_status = gtk_label_new("Thang hien tai dang o tang:");
+  label_status = gtk_label_new("Current floor:");
   label_next_request = gtk_label_new ("Cac request tiep theo:");
   //print(attach) label status
   gtk_grid_attach(GTK_GRID(window_grid),label_status,2,1,4,1);
