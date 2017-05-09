@@ -15,11 +15,11 @@ static void
 call_func(GtkWidget *widget,
       gpointer data)
 {   // Set id cho button de su dung css #red_btn
-
-    gtk_widget_set_name(call_btn, "red_btn");
-    
-    //g_print("Ban da click call_btn at floor: %d\n",this_floor-SIGRTMIN-10);
-    send_signal(pid_list[LIFT_MNG],(my_floor_number-1)+SIGRTMIN+F1_CALL);    
+    if(strcmp(gtk_widget_get_name(call_btn),"red_btn")!=0){
+        gtk_widget_set_name(call_btn, "red_btn");       
+        //g_print("Ban da click call_btn at floor: %d\n",this_floor-SIGRTMIN-10);
+        send_signal(pid_list[LIFT_MNG],(my_floor_number-1)+SIGRTMIN+F1_CALL);    
+    }
 }
 GdkPixbuf *create_pixbuf(const gchar * filename) {
     
@@ -139,8 +139,9 @@ void direction_change(int sigNo){
             break;
     }
 }
-void lift_arrival(){
-    printf("Tang %d get arrives notification\n",my_floor_number);
+void finish_move(){    
+    //printf("Tang %d get arrives notification\n",my_floor_number);
+    gtk_widget_set_name(call_btn, "default_btn");
 }
 int main(int argc, char *argv[])
 {	
@@ -148,7 +149,7 @@ int main(int argc, char *argv[])
     int status;
     signal(SIGRTMIN+F1_ARRIVAL,current_floor_change);signal(SIGRTMIN+F2_ARRIVAL,current_floor_change);signal(SIGRTMIN+F3_ARRIVAL,current_floor_change);signal(SIGRTMIN+F4_ARRIVAL,current_floor_change);signal(SIGRTMIN+F5_ARRIVAL,current_floor_change);    
 	// signal(SIGRTMIN+LIFT_UP,direction_change);signal(SIGRTMIN+LIFT_DOWN,direction_change);signal(SIGRTMIN+LIFT_STOP,direction_change);
-    signal(SIGRTMIN+FINISHED,lift_arrival);
+    signal(SIGRTMIN+FINISHED,finish_move);
     if(argc!=2){
 		printf("Usage: opx FLOOR_NUMBER\n"); exit(0);
 	}		
