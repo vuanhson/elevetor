@@ -89,7 +89,7 @@ int main(int argc, char const *argv[])
 	printf("mng_process_id: %d\n",getpid());		
 
 	//Make FIFO file
-	remove("queue");
+	remove(FIFO_FILE_PATH);
 	if ( mkfifo(FIFO_FILE_PATH,0666) == -1 ){
 	    perror("mkfifo");
 	    exit(1);

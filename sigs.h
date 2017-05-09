@@ -59,6 +59,7 @@ int send_signal(pid_t pid,int sigNo);
 #include <sys/errno.h>
 #include <sys/fcntl.h>
 
-#define FIFO_FILE_PATH "queue"
+#define FIFO_FILE_PATH "requestsqueue"
+#define OPE1_FIFO_FILE "ope1fifofile"
 #define BUFF_SIZE 256
 #endif

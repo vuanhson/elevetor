@@ -3,6 +3,7 @@
 
 pid_t* pid_list;
 int current_floor_number=1;
+int fifoFd;
 GtkWidget *window;
 GtkWidget *button2;
 GtkWidget *button3;
@@ -20,40 +21,48 @@ func2(GtkWidget *widget,
       gpointer data)
 {
     //g_print("Ban da click button2\n");
-    // if(strcmp(gtk_widget_get_name(button2),"red_btn")!=0){
-        // gtk_widget_set_name(button2, "red_btn");
+    int tang=2;
+    if(strcmp(gtk_widget_get_name(button2),"red_btn")!=0){
+        gtk_widget_set_name(button2, "red_btn");
         send_signal(pid_list[LIFT_MNG],SIGRTMIN+F2_UP);
-    // }    
+        write(fifoFd,&tang,sizeof(int)); 
+    }    
 }
 static void
 func3(GtkWidget *widget,
       gpointer data)
 {
     //g_print("Ban da click button3\n");
-    // if(strcmp(gtk_widget_get_name(button3),"red_btn")!=0){
-        // gtk_widget_set_name(button3, "red_btn");
+    int tang=3;
+    if(strcmp(gtk_widget_get_name(button3),"red_btn")!=0){
+        gtk_widget_set_name(button3, "red_btn");
         send_signal(pid_list[LIFT_MNG],SIGRTMIN+F3_UP);
-    // }
+        write(fifoFd,&tang,sizeof(int)); 
+    }
 }
 static void
 func4(GtkWidget *widget,
       gpointer data)
 {
     //g_print("Ban da click button4\n");
-    // if(strcmp(gtk_widget_get_name(button4),"red_btn")!=0){
-        // gtk_widget_set_name(button4, "red_btn");
+    int tang=4;
+    if(strcmp(gtk_widget_get_name(button4),"red_btn")!=0){
+        gtk_widget_set_name(button4, "red_btn");
         send_signal(pid_list[LIFT_MNG],SIGRTMIN+F4_UP);
-    // }
+        write(fifoFd,&tang,sizeof(int)); 
+    }
 }
 static void
 func5(GtkWidget *widget,
       gpointer data)
 {
     //g_print("Ban da click button5\n");
-    // if(strcmp(gtk_widget_get_name(button5),"red_btn")!=0){
-        // gtk_widget_set_name(button5, "red_btn");
-        send_signal(pid_list[LIFT_MNG],SIGRTMIN+F5_UP); 
-    // }   
+    int tang=5;
+    if(strcmp(gtk_widget_get_name(button5),"red_btn")!=0){
+        gtk_widget_set_name(button5, "red_btn");
+        send_signal(pid_list[LIFT_MNG],SIGRTMIN+F5_UP);
+        write(fifoFd,&tang,sizeof(int)); 
+    }   
 }
 
 static void quit(){    
@@ -205,17 +214,45 @@ void direction_change(int sigNo){
             break;
     }
 }
-void lift_arrival(){
-    printf("Tang 1 get arrives notification\n");
+void finish_move(){
+    //printf("Tang 1 get arrives notification\n");
+    int tang;
+    if(read(fifoFd,&tang,sizeof(int))>0)
+        switch(tang){
+            case 2:
+                gtk_widget_set_name(button2, "default_btn");
+            break;
+            case 3:
+                gtk_widget_set_name(button3, "default_btn");
+            break;
+            case 4:
+                gtk_widget_set_name(button4, "default_btn");
+            break;
+            case 5:
+                gtk_widget_set_name(button5, "default_btn");
+            break;
+            default:break;
+        }
 }
 int main(int argc, char *argv[])
 {
 	signal(SIGRTMIN+F1_ARRIVAL,current_floor_change);signal(SIGRTMIN+F2_ARRIVAL,current_floor_change);signal(SIGRTMIN+F3_ARRIVAL,current_floor_change);signal(SIGRTMIN+F4_ARRIVAL,current_floor_change);signal(SIGRTMIN+F5_ARRIVAL,current_floor_change);
 	// signal(SIGRTMIN+LIFT_UP,direction_change);signal(SIGRTMIN+LIFT_DOWN,direction_change);signal(SIGRTMIN+LIFT_STOP,direction_change);
-    signal(SIGRTMIN+FINISHED,lift_arrival);
+    signal(SIGRTMIN+FINISHED,finish_move);
     pid_list=update_pid(OPE_PANE1);
     setpgid(pid_list[OPE_PANE1],pid_list[LIFT_MNG]);	
-    printf("ope1_process_id %d\n",pid_list[OPE_PANE1] );    
+    printf("ope1_process_id %d\n",pid_list[OPE_PANE1] ); 
+    //Make FIFO file
+    remove(OPE1_FIFO_FILE);
+    if ( mkfifo(OPE1_FIFO_FILE,0666) == -1 ){
+        perror("mkfifo");
+        exit(1);
+    }
+    //Open for writing only
+    if ( ( fifoFd=open(OPE1_FIFO_FILE,O_RDWR|O_NONBLOCK) ) == -1 ){
+        perror("fifofile open");
+        exit(1);
+    }   
 	GtkApplication *app;
     int status;
     strcpy(window_title,"Tầng 1");    
@@ -223,5 +260,7 @@ int main(int argc, char *argv[])
     g_signal_connect(app, "activate", G_CALLBACK(activate), NULL);
     status = g_application_run(G_APPLICATION(app), 0, NULL);
     g_object_unref(app);
+    close(fifoFd);
+    unlink(OPE1_FIFO_FILE);    
     return status;
 }
