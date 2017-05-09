@@ -2,6 +2,8 @@
 #include <gtk/gtk.h>
 
 pid_t* pid_list;
+int current_floor_number=1;
+int fifoFd;
 GtkWidget *window;
 GtkWidget *button2;
 GtkWidget *button3;
@@ -19,28 +21,48 @@ func2(GtkWidget *widget,
       gpointer data)
 {
     //g_print("Ban da click button2\n");
-    send_signal(pid_list[LIFT_MNG],SIGRTMIN+F2_CALL);
+    int tang=2;
+    if(strcmp(gtk_widget_get_name(button2),"red_btn")!=0){
+        gtk_widget_set_name(button2, "red_btn");
+        send_signal(pid_list[LIFT_MNG],SIGRTMIN+F2_UP);
+        write(fifoFd,&tang,sizeof(int)); 
+    }    
 }
 static void
 func3(GtkWidget *widget,
       gpointer data)
 {
     //g_print("Ban da click button3\n");
-    send_signal(pid_list[LIFT_MNG],SIGRTMIN+F3_CALL);
+    int tang=3;
+    if(strcmp(gtk_widget_get_name(button3),"red_btn")!=0){
+        gtk_widget_set_name(button3, "red_btn");
+        send_signal(pid_list[LIFT_MNG],SIGRTMIN+F3_UP);
+        write(fifoFd,&tang,sizeof(int)); 
+    }
 }
 static void
 func4(GtkWidget *widget,
       gpointer data)
 {
     //g_print("Ban da click button4\n");
-    send_signal(pid_list[LIFT_MNG],SIGRTMIN+F4_CALL);
+    int tang=4;
+    if(strcmp(gtk_widget_get_name(button4),"red_btn")!=0){
+        gtk_widget_set_name(button4, "red_btn");
+        send_signal(pid_list[LIFT_MNG],SIGRTMIN+F4_UP);
+        write(fifoFd,&tang,sizeof(int)); 
+    }
 }
 static void
 func5(GtkWidget *widget,
       gpointer data)
 {
     //g_print("Ban da click button5\n");
-    send_signal(pid_list[LIFT_MNG],SIGRTMIN+F5_CALL);    
+    int tang=5;
+    if(strcmp(gtk_widget_get_name(button5),"red_btn")!=0){
+        gtk_widget_set_name(button5, "red_btn");
+        send_signal(pid_list[LIFT_MNG],SIGRTMIN+F5_UP);
+        write(fifoFd,&tang,sizeof(int)); 
+    }   
 }
 
 static void quit(){    
@@ -56,15 +78,39 @@ static void quit(){
     release_shm();
     gtk_widget_destroy(window);
 }
+GdkPixbuf *create_pixbuf(const gchar * filename) {
+    
+   GdkPixbuf *pixbuf;
+   GError *error = NULL;
+   pixbuf = gdk_pixbuf_new_from_file(filename, &error);
+   
+   if (!pixbuf) {
+       
+      fprintf(stderr, "%s\n", error->message);
+      g_error_free(error);
+   }
+
+   return pixbuf;
+}
 static void
 activate(GtkApplication *app,
          gpointer user_data)
 {
+    // <-------------  For add stylesheet.css
+    GtkCssProvider* Provider = gtk_css_provider_new();
+    GdkDisplay* Display = gdk_display_get_default();
+    GdkScreen* Screen = gdk_display_get_default_screen(Display);
+
+    gtk_style_context_add_provider_for_screen(Screen, GTK_STYLE_PROVIDER(Provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
+    gtk_css_provider_load_from_path(GTK_CSS_PROVIDER(Provider), "stylesheet.css", NULL);
+    // End add stylesheet.css ---------------->
 
     window = gtk_application_window_new(app);
     gtk_window_set_title(GTK_WINDOW(window), window_title);
     gtk_window_set_default_size(GTK_WINDOW(window), 150, 200);
-    gtk_window_move(GTK_WINDOW(window),375,250);
+    gtk_window_move(GTK_WINDOW(window),50,490);
+    gtk_window_set_icon(GTK_WINDOW(window), create_pixbuf("icon"));
+    gtk_window_set_decorated(GTK_WINDOW(window), FALSE);
     //   Add Vbox
     main_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
     gtk_container_add(GTK_CONTAINER(window), main_box);
@@ -72,11 +118,14 @@ activate(GtkApplication *app,
     button_box = gtk_button_box_new(GTK_ORIENTATION_VERTICAL);
     gtk_container_add(GTK_CONTAINER(main_box), button_box);
 
-    up_down_btn = gtk_button_new_with_label("---");
+    up_down_btn = gtk_button_new_with_label("FLOOR 1");
+    gtk_widget_set_name(up_down_btn, "info_btn");
     gtk_widget_set_sensitive(up_down_btn, FALSE);
     gtk_container_add(GTK_CONTAINER(button_box), up_down_btn);
 
     current_floor_btn = gtk_button_new_with_label("1");
+    gtk_widget_set_name(current_floor_btn, "unready_btn");    
+
     gtk_widget_set_sensitive(current_floor_btn, FALSE);
     gtk_container_add(GTK_CONTAINER(button_box), current_floor_btn);
     // button 2
@@ -106,6 +155,8 @@ activate(GtkApplication *app,
     gtk_widget_show_all(window);
 }
 void current_floor_change(int sigNo){
+    gtk_widget_set_name(current_floor_btn, "unready_btn");
+    current_floor_number=sigNo-SIGRTMIN;
 	switch(sigNo-SIGRTMIN){
 		case F1_ARRIVAL:			
 			gtk_button_set_label(GTK_BUTTON(current_floor_btn),"1");
@@ -126,27 +177,96 @@ void current_floor_change(int sigNo){
 			break;
 	}	
 }
-void direction_change(int sigNo){
-    switch(sigNo-SIGRTMIN){
-        case LIFT_UP:            
-            gtk_button_set_label(GTK_BUTTON(up_down_btn),"UP");
+// void direction_change(int sigNo){
+//     switch(sigNo-SIGRTMIN){
+//         case LIFT_UP:            
+//             gtk_button_set_label(GTK_BUTTON(up_down_btn),"UP");
+//             break;
+//         case LIFT_STOP:            
+//             gtk_button_set_label(GTK_BUTTON(up_down_btn),"STAND");
+//             switch(current_floor_number+1){
+//                 case 2:
+//                     if(strcmp(gtk_widget_get_name(button2),"red_btn")==0){
+//                         gtk_widget_set_name(button2, "default_btn");                         
+//                     } 
+//                 break;
+//                 case 3:
+//                     if(strcmp(gtk_widget_get_name(button3),"red_btn")==0){
+//                         gtk_widget_set_name(button3, "default_btn");                         
+//                     } 
+//                 break;
+//                 case 4:
+//                     if(strcmp(gtk_widget_get_name(button4),"red_btn")==0){
+//                         gtk_widget_set_name(button4, "default_btn");                         
+//                     } 
+//                 break;
+//                 case 5:
+//                     if(strcmp(gtk_widget_get_name(button5),"red_btn")==0){
+//                         gtk_widget_set_name(button5, "default_btn");                         
+//                     } 
+//                 break;
+//                 default:break;
+//             }
+//             break;
+//         case LIFT_DOWN:            
+//             gtk_button_set_label(GTK_BUTTON(up_down_btn),"DOWN");
+//             break;          
+//         default:            
+//             break;
+//     }
+// }
+void finish_move(){
+    //printf("Tang 1 get arrives notification\n");
+    int tang;
+    if(read(fifoFd,&tang,sizeof(int))>0)
+        switch(tang){
+            case 2:
+                //gtk_widget_set_name(current_floor_btn, "ready_btn");                
+                
+                gtk_widget_set_name(button2, "default_btn");                
             break;
-        case LIFT_STOP:            
-            gtk_button_set_label(GTK_BUTTON(up_down_btn),"STAND");
+            case 3:
+                //gtk_widget_set_name(current_floor_btn, "ready_btn");
+                
+                gtk_widget_set_name(button3, "default_btn");
             break;
-        case LIFT_DOWN:            
-            gtk_button_set_label(GTK_BUTTON(up_down_btn),"DOWN");
-            break;          
-        default:            
+            case 4:
+                //gtk_widget_set_name(current_floor_btn, "ready_btn");
+                
+                gtk_widget_set_name(button4, "default_btn");
             break;
-    }
+            case 5:
+                //gtk_widget_set_name(current_floor_btn, "ready_btn");
+                
+                gtk_widget_set_name(button5, "default_btn");
+            break;
+            default:break;
+        }
+}
+void using(){
+    printf("Co nhan duco\n");
+    gtk_widget_set_name(current_floor_btn, "ready_btn");
 }
 int main(int argc, char *argv[])
 {
 	signal(SIGRTMIN+F1_ARRIVAL,current_floor_change);signal(SIGRTMIN+F2_ARRIVAL,current_floor_change);signal(SIGRTMIN+F3_ARRIVAL,current_floor_change);signal(SIGRTMIN+F4_ARRIVAL,current_floor_change);signal(SIGRTMIN+F5_ARRIVAL,current_floor_change);
-	signal(SIGRTMIN+LIFT_UP,direction_change);signal(SIGRTMIN+LIFT_DOWN,direction_change);signal(SIGRTMIN+LIFT_STOP,direction_change);
-    pid_list=update_pid(OPE_PANE1);	
-    printf("ope1_process_id %d\n",pid_list[OPE_PANE1] );    
+	// signal(SIGRTMIN+LIFT_UP,direction_change);signal(SIGRTMIN+LIFT_DOWN,direction_change);signal(SIGRTMIN+LIFT_STOP,direction_change);
+    signal(SIGRTMIN+FINISHED,finish_move);
+    signal(SIGRTMIN+USING,using);
+    pid_list=update_pid(OPE_PANE1);
+    setpgid(pid_list[OPE_PANE1],pid_list[LIFT_MNG]);	
+    printf("ope1_process_id %d\n",pid_list[OPE_PANE1] ); 
+    //Make FIFO file
+    remove(OPE1_FIFO_FILE);
+    if ( mkfifo(OPE1_FIFO_FILE,0666) == -1 ){
+        perror("mkfifo");
+        exit(1);
+    }
+    //Open for writing only
+    if ( ( fifoFd=open(OPE1_FIFO_FILE,O_RDWR|O_NONBLOCK) ) == -1 ){
+        perror("fifofile open");
+        exit(1);
+    }   
 	GtkApplication *app;
     int status;
     strcpy(window_title,"Tầng 1");    
@@ -154,5 +274,7 @@ int main(int argc, char *argv[])
     g_signal_connect(app, "activate", G_CALLBACK(activate), NULL);
     status = g_application_run(G_APPLICATION(app), 0, NULL);
     g_object_unref(app);
+    close(fifoFd);
+    unlink(OPE1_FIFO_FILE);    
     return status;
 }

@@ -14,9 +14,7 @@ void release_shm(){
 	int shmid = shmget(SHARE_KEY,10*sizeof(pid_t),IPC_CREAT);
 	shmctl(shmid,IPC_RMID,NULL);
 }
-void send_signal(pid_t pid,int sigNo){
-	if (pid>0) kill(pid,sigNo);
-	else {
-		//printf("Pid not existed!\n");
-	}
+int send_signal(pid_t pid,int sigNo){
+	if (pid>0) return (kill(pid,sigNo)==0);
+	else return 0;
 }
