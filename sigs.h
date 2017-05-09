@@ -12,6 +12,7 @@
 #include <sys/shm.h>
 #include <time.h>
 
+
 enum {LIFT_MNG,LIFT_CTR,OPE_PANE1,OPE_PANE2,OPE_PANE3,OPE_PANE4,OPE_PANE5,LIFT_POSITION};
 #define CLOCK 200000
 #define TRUE 1
@@ -30,6 +31,11 @@ enum {LIFT_MNG,LIFT_CTR,OPE_PANE1,OPE_PANE2,OPE_PANE3,OPE_PANE4,OPE_PANE5,LIFT_P
 #define F3_CALL 13
 #define F4_CALL 14
 #define F5_CALL 15
+#define F1_UP 16
+#define F2_UP 17
+#define F3_UP 18
+#define F4_UP 19
+#define F5_UP 20
 
 #define MOVING 9
 #define FINISHED 10
@@ -49,7 +55,6 @@ enum {LIFT_MNG,LIFT_CTR,OPE_PANE1,OPE_PANE2,OPE_PANE3,OPE_PANE4,OPE_PANE5,LIFT_P
 pid_t* update_pid(int i);
 void release_shm();
 int send_signal(pid_t pid,int sigNo);
-
 #include <sys/stat.h>
 #include <sys/errno.h>
 #include <sys/fcntl.h>

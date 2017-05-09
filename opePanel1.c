@@ -22,7 +22,7 @@ func2(GtkWidget *widget,
     //g_print("Ban da click button2\n");
     // if(strcmp(gtk_widget_get_name(button2),"red_btn")!=0){
         // gtk_widget_set_name(button2, "red_btn");
-        send_signal(pid_list[LIFT_MNG],SIGRTMIN+F2_CALL);
+        send_signal(pid_list[LIFT_MNG],SIGRTMIN+F2_UP);
     // }    
 }
 static void
@@ -32,7 +32,7 @@ func3(GtkWidget *widget,
     //g_print("Ban da click button3\n");
     // if(strcmp(gtk_widget_get_name(button3),"red_btn")!=0){
         // gtk_widget_set_name(button3, "red_btn");
-        send_signal(pid_list[LIFT_MNG],SIGRTMIN+F3_CALL);
+        send_signal(pid_list[LIFT_MNG],SIGRTMIN+F3_UP);
     // }
 }
 static void
@@ -42,7 +42,7 @@ func4(GtkWidget *widget,
     //g_print("Ban da click button4\n");
     // if(strcmp(gtk_widget_get_name(button4),"red_btn")!=0){
         // gtk_widget_set_name(button4, "red_btn");
-        send_signal(pid_list[LIFT_MNG],SIGRTMIN+F4_CALL);
+        send_signal(pid_list[LIFT_MNG],SIGRTMIN+F4_UP);
     // }
 }
 static void
@@ -52,7 +52,7 @@ func5(GtkWidget *widget,
     //g_print("Ban da click button5\n");
     // if(strcmp(gtk_widget_get_name(button5),"red_btn")!=0){
         // gtk_widget_set_name(button5, "red_btn");
-        send_signal(pid_list[LIFT_MNG],SIGRTMIN+F5_CALL); 
+        send_signal(pid_list[LIFT_MNG],SIGRTMIN+F5_UP); 
     // }   
 }
 
@@ -68,6 +68,20 @@ static void quit(){
     shmdt(pid_list);
     release_shm();
     gtk_widget_destroy(window);
+}
+GdkPixbuf *create_pixbuf(const gchar * filename) {
+    
+   GdkPixbuf *pixbuf;
+   GError *error = NULL;
+   pixbuf = gdk_pixbuf_new_from_file(filename, &error);
+   
+   if (!pixbuf) {
+       
+      fprintf(stderr, "%s\n", error->message);
+      g_error_free(error);
+   }
+
+   return pixbuf;
 }
 static void
 activate(GtkApplication *app,
@@ -85,7 +99,9 @@ activate(GtkApplication *app,
     window = gtk_application_window_new(app);
     gtk_window_set_title(GTK_WINDOW(window), window_title);
     gtk_window_set_default_size(GTK_WINDOW(window), 150, 200);
-    gtk_window_move(GTK_WINDOW(window),375,250);
+    gtk_window_move(GTK_WINDOW(window),50,490);
+    gtk_window_set_icon(GTK_WINDOW(window), create_pixbuf("icon"));
+    gtk_window_set_decorated(GTK_WINDOW(window), FALSE);
     //   Add Vbox
     main_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
     gtk_container_add(GTK_CONTAINER(window), main_box);
@@ -189,10 +205,14 @@ void direction_change(int sigNo){
             break;
     }
 }
+void lift_arrival(){
+    printf("Tang 1 get arrives notification\n");
+}
 int main(int argc, char *argv[])
 {
 	signal(SIGRTMIN+F1_ARRIVAL,current_floor_change);signal(SIGRTMIN+F2_ARRIVAL,current_floor_change);signal(SIGRTMIN+F3_ARRIVAL,current_floor_change);signal(SIGRTMIN+F4_ARRIVAL,current_floor_change);signal(SIGRTMIN+F5_ARRIVAL,current_floor_change);
-	signal(SIGRTMIN+LIFT_UP,direction_change);signal(SIGRTMIN+LIFT_DOWN,direction_change);signal(SIGRTMIN+LIFT_STOP,direction_change);
+	// signal(SIGRTMIN+LIFT_UP,direction_change);signal(SIGRTMIN+LIFT_DOWN,direction_change);signal(SIGRTMIN+LIFT_STOP,direction_change);
+    signal(SIGRTMIN+FINISHED,lift_arrival);
     pid_list=update_pid(OPE_PANE1);
     setpgid(pid_list[OPE_PANE1],pid_list[LIFT_MNG]);	
     printf("ope1_process_id %d\n",pid_list[OPE_PANE1] );    

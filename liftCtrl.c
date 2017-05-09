@@ -16,26 +16,31 @@ void up_request(int sigNo){
 	//  	//send_signal(pid_list[LIFT_MNG],SIGRTMIN+LIFT_DOWN);
 	// }
 	switch(sigNo-SIGRTMIN){
+		case F1_UP:
 		case F1_CALL: des=1;
 		printf("Back to floor %d\n",des);
 		send_signal(body_process_id,SIGRTMIN+LIFT_DOWN);
 		// send_signal(pid_list[LIFT_MNG],SIGRTMIN+LIFT_DOWN);
 		break;
+		case F2_UP:
 		case F2_CALL: des=2;
 		printf("Request up to floor %d\n",des);
 		send_signal(body_process_id,SIGRTMIN+LIFT_UP);
 		// send_signal(pid_list[LIFT_MNG],SIGRTMIN+LIFT_UP);
 		break;
+		case F3_UP:
 		case F3_CALL: des=3;
 		printf("Request up to floor %d\n",des);
 		send_signal(body_process_id,SIGRTMIN+LIFT_UP);
 		// send_signal(pid_list[LIFT_MNG],SIGRTMIN+LIFT_UP);
 		break;
+		case F4_UP:
 		case F4_CALL: des=4;
 		printf("Request up to floor %d\n",des);
 		send_signal(body_process_id,SIGRTMIN+LIFT_UP);
 		// send_signal(pid_list[LIFT_MNG],SIGRTMIN+LIFT_UP);
 		break;
+		case F5_UP:
 		case F5_CALL: des=5;
 		printf("Request up to floor %d\n",des);
 		send_signal(body_process_id,SIGRTMIN+LIFT_UP);
@@ -70,8 +75,7 @@ void sensor_change(int sigNo){
 		if(des==1){
 			send_signal(body_process_id,SIGRTMIN+LIFT_STOP);			
 			puts("Finish move");			
-		}
-		// else send_signal(pid_list[LIFT_MNG],SIGRTMIN+MOVING);
+		}		
 		break;
 		case F2_ARRIVAL:		
 		case F3_ARRIVAL:		
@@ -86,8 +90,7 @@ void sensor_change(int sigNo){
 				des=1;
 				send_signal(body_process_id,SIGRTMIN+LIFT_DOWN);
 				//send_signal(pid_list[LIFT_MNG],SIGRTMIN+LIFT_DOWN);			
-			}
-			// else send_signal(pid_list[LIFT_MNG],SIGRTMIN+MOVING);
+			}			
 			break;		
 		default:			
 		break;
@@ -103,8 +106,7 @@ void sensor_change(int sigNo){
 void sensor_process_run(){	
 	int control_process_id=getppid();
 	//printf("Sensor: %d of  Ctrl: %d \n",getpid(),control_process_id);
-	int previous_position=pid_list[LIFT_POSITION];
-	//printf("init value: %d\n",pid_list[LIFT_POSITION] );
+	int previous_position=pid_list[LIFT_POSITION];	
 	int t=0;
 	while(1){
 		usleep(CLOCK);
@@ -203,6 +205,7 @@ void quit(){
 int main(int argc, char const *argv[]){
 	
 	signal(SIGRTMIN+F2_CALL,up_request);signal(SIGRTMIN+F3_CALL,up_request);signal(SIGRTMIN+F4_CALL,up_request);signal(SIGRTMIN+F5_CALL,up_request);
+	signal(SIGRTMIN+F2_UP,up_request);	signal(SIGRTMIN+F3_UP,up_request);	signal(SIGRTMIN+F4_UP,up_request);	signal(SIGRTMIN+F5_UP,up_request);
 	signal(SIGRTMIN+F1_ARRIVAL,sensor_change);signal(SIGRTMIN+F2_ARRIVAL,sensor_change);signal(SIGRTMIN+F3_ARRIVAL,sensor_change);signal(SIGRTMIN+F4_ARRIVAL,sensor_change);signal(SIGRTMIN+F5_ARRIVAL,sensor_change);
 	
 	pid_list=update_pid(LIFT_CTR);// lưu pid của tiến trình liftCtrl vào share memory.

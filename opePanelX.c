@@ -15,24 +15,25 @@ static void
 call_func(GtkWidget *widget,
       gpointer data)
 {   // Set id cho button de su dung css #red_btn
-    gtk_widget_set_name(call_btn, "red_btn");
 
-    int this_floor=*(int*)data;
+    gtk_widget_set_name(call_btn, "red_btn");
+    
     //g_print("Ban da click call_btn at floor: %d\n",this_floor-SIGRTMIN-10);
-    send_signal(pid_list[LIFT_MNG],this_floor);    
+    send_signal(pid_list[LIFT_MNG],(my_floor_number-1)+SIGRTMIN+F1_CALL);    
 }
-static void quit(){ 
-    send_signal(pid_list[LIFT_MNG],SIGINT);
-    send_signal(pid_list[LIFT_CTR],SIGINT);
-    int i;
-    pid_t this_pid=getpid();
-    for(i=OPE_PANE1;i<=OPE_PANE5;i++){
-        if(this_pid!=pid_list[i])
-            send_signal(pid_list[i],SIGINT);
-    }  
-    shmdt(pid_list);
-    release_shm();
-    gtk_widget_destroy(window);
+GdkPixbuf *create_pixbuf(const gchar * filename) {
+    
+   GdkPixbuf *pixbuf;
+   GError *error = NULL;
+   pixbuf = gdk_pixbuf_new_from_file(filename, &error);
+   
+   if (!pixbuf) {
+       
+      fprintf(stderr, "%s\n", error->message);
+      g_error_free(error);
+   }
+
+   return pixbuf;
 }
 static void
 activate(GtkApplication *app,
@@ -51,7 +52,25 @@ activate(GtkApplication *app,
     window = gtk_application_window_new(app);
     gtk_window_set_title(GTK_WINDOW(window), window_title);
     gtk_window_set_default_size(GTK_WINDOW(window), 150, 100);
-    gtk_window_move(GTK_WINDOW(window),150*(my_floor_number-1),100);
+    
+    switch(my_floor_number){
+        case 5:
+            gtk_window_move(GTK_WINDOW(window),50,50);
+        break;
+        case 4:
+            gtk_window_move(GTK_WINDOW(window),50,160);
+        break;
+        case 3:
+            gtk_window_move(GTK_WINDOW(window),50,270);
+        break;
+        case 2:
+            gtk_window_move(GTK_WINDOW(window),50,380);
+        break;
+        default:break;
+    }    
+    
+    gtk_window_set_icon(GTK_WINDOW(window), create_pixbuf("icon"));
+    gtk_window_set_decorated(GTK_WINDOW(window), FALSE);
     //   Add Vbox
     main_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
     gtk_container_add(GTK_CONTAINER(window), main_box);
@@ -71,7 +90,7 @@ activate(GtkApplication *app,
     gtk_container_add(GTK_CONTAINER(button_box), current_floor_btn);
     // button x
     call_btn = gtk_button_new_with_label("CALL");
-    g_signal_connect(call_btn, "clicked", G_CALLBACK(call_func), user_data);
+    g_signal_connect(call_btn, "clicked", G_CALLBACK(call_func),NULL);
     gtk_container_add(GTK_CONTAINER(button_box), call_btn);
     
     // show all widget
@@ -120,21 +139,26 @@ void direction_change(int sigNo){
             break;
     }
 }
+void lift_arrival(){
+    printf("Tang %d get arrives notification\n",my_floor_number);
+}
 int main(int argc, char *argv[])
 {	
 	GtkApplication *app;
     int status;
     signal(SIGRTMIN+F1_ARRIVAL,current_floor_change);signal(SIGRTMIN+F2_ARRIVAL,current_floor_change);signal(SIGRTMIN+F3_ARRIVAL,current_floor_change);signal(SIGRTMIN+F4_ARRIVAL,current_floor_change);signal(SIGRTMIN+F5_ARRIVAL,current_floor_change);    
-	signal(SIGRTMIN+LIFT_UP,direction_change);signal(SIGRTMIN+LIFT_DOWN,direction_change);signal(SIGRTMIN+LIFT_STOP,direction_change);
+	// signal(SIGRTMIN+LIFT_UP,direction_change);signal(SIGRTMIN+LIFT_DOWN,direction_change);signal(SIGRTMIN+LIFT_STOP,direction_change);
+    signal(SIGRTMIN+FINISHED,lift_arrival);
     if(argc!=2){
 		printf("Usage: opx FLOOR_NUMBER\n"); exit(0);
 	}		
 	int this_floor;
     my_floor_number=atoi(argv[1]);
+    printf("ope%d_process_id %d\n",my_floor_number, getpid() );
 	switch(my_floor_number){
 		case 2:
         
-		pid_list=update_pid(OPE_PANE2);
+		pid_list=update_pid(OPE_PANE2);        
         setpgid(pid_list[OPE_PANE2],pid_list[LIFT_MNG]);
 		this_floor=SIGRTMIN+F2_CALL;
 		strcpy(window_title,"Tầng 2");
