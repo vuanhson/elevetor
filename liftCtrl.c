@@ -73,7 +73,9 @@ void sensor_change(int sigNo){
 	switch(sigNo-SIGRTMIN){
 		case F1_ARRIVAL:		
 		if(des==1){
-			send_signal(body_process_id,SIGRTMIN+LIFT_STOP);			
+			send_signal(body_process_id,SIGRTMIN+LIFT_STOP);
+			send_signal(pid_list[LIFT_MNG],SIGRTMIN+FINISHED);
+			//printf("Ctr send Mng: %d\n",SIGRTMIN+FINISHED);									
 			puts("Finish move");			
 		}		
 		break;
@@ -83,13 +85,12 @@ void sensor_change(int sigNo){
 		case F5_ARRIVAL:
 			i=sigNo-SIGRTMIN-F1_ARRIVAL+1;			
 			if(des==i){
-				send_signal(body_process_id,SIGRTMIN+LIFT_STOP);
-				//send_signal(pid_list[LIFT_MNG],SIGRTMIN+LIFT_STOP);
+				send_signal(body_process_id,SIGRTMIN+LIFT_STOP);				
+				send_signal(pid_list[LIFT_MNG],SIGRTMIN+FINISHED);
 				sleep(WAIT_TIME);
 				printf("chuyen hang o tang %d\n",des );
 				des=1;
-				send_signal(body_process_id,SIGRTMIN+LIFT_DOWN);
-				//send_signal(pid_list[LIFT_MNG],SIGRTMIN+LIFT_DOWN);			
+				send_signal(body_process_id,SIGRTMIN+LIFT_DOWN);							
 			}			
 			break;		
 		default:			
@@ -106,8 +107,8 @@ void sensor_change(int sigNo){
 void sensor_process_run(){	
 	int control_process_id=getppid();
 	//printf("Sensor: %d of  Ctrl: %d \n",getpid(),control_process_id);
-	int previous_position=pid_list[LIFT_POSITION];	
-	int t=0;
+	int previous_position=15;	
+	
 	while(1){
 		usleep(CLOCK);
 		

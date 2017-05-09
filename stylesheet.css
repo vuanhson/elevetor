@@ -7,6 +7,7 @@ border-radius: 5px;
 }
 #info_btn{
   color:black;
+  background: yellow;
 }
 #default_btn{
 	color:green;
@@ -17,4 +18,7 @@ border-radius: 5px;
 }
 #ready_btn{
 	background: blue;
+}
+#unready_btn{
+	background: white;
 }

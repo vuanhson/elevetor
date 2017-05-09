@@ -52,23 +52,7 @@ activate(GtkApplication *app,
     window = gtk_application_window_new(app);
     gtk_window_set_title(GTK_WINDOW(window), window_title);
     gtk_window_set_default_size(GTK_WINDOW(window), 150, 100);
-    
-    switch(my_floor_number){
-        case 5:
-            gtk_window_move(GTK_WINDOW(window),50,50);
-        break;
-        case 4:
-            gtk_window_move(GTK_WINDOW(window),50,160);
-        break;
-        case 3:
-            gtk_window_move(GTK_WINDOW(window),50,270);
-        break;
-        case 2:
-            gtk_window_move(GTK_WINDOW(window),50,380);
-        break;
-        default:break;
-    }    
-    
+        
     gtk_window_set_icon(GTK_WINDOW(window), create_pixbuf("icon"));
     gtk_window_set_decorated(GTK_WINDOW(window), FALSE);
     //   Add Vbox
@@ -78,13 +62,31 @@ activate(GtkApplication *app,
     button_box = gtk_button_box_new(GTK_ORIENTATION_VERTICAL);
     gtk_container_add(GTK_CONTAINER(main_box), button_box);
 
-    up_down_btn = gtk_button_new_with_label("---");
+    switch(my_floor_number){
+        case 5:
+            gtk_window_move(GTK_WINDOW(window),50,50);
+            up_down_btn = gtk_button_new_with_label("FLOOR 5");
+        break;
+        case 4:
+            up_down_btn = gtk_button_new_with_label("FLOOR 4");
+            gtk_window_move(GTK_WINDOW(window),50,160);
+        break;
+        case 3:
+            up_down_btn = gtk_button_new_with_label("FLOOR 3");
+            gtk_window_move(GTK_WINDOW(window),50,270);
+        break;
+        case 2:
+            up_down_btn = gtk_button_new_with_label("FLOOR 2");
+            gtk_window_move(GTK_WINDOW(window),50,380);
+        break;
+        default:break;
+    }
     gtk_widget_set_name(up_down_btn, "info_btn");
     gtk_widget_set_sensitive(up_down_btn, FALSE);
     gtk_container_add(GTK_CONTAINER(button_box), up_down_btn);
 
     current_floor_btn = gtk_button_new_with_label("1");
-    gtk_widget_set_name(current_floor_btn, "info_btn");
+    gtk_widget_set_name(current_floor_btn, "unready_btn");
 
     gtk_widget_set_sensitive(current_floor_btn, FALSE);
     gtk_container_add(GTK_CONTAINER(button_box), current_floor_btn);
@@ -97,10 +99,15 @@ activate(GtkApplication *app,
     gtk_widget_show_all(window);
 }
 void current_floor_change(int sigNo){
-    current_floor_number=sigNo-SIGRTMIN;    
+    // current_floor_number=sigNo-SIGRTMIN-F1_ARRIVAL+1;
+    // if(my_floor_number==3) printf("%d va %d\n",current_floor_number,sigNo-SIGRTMIN-F1_ARRIVAL+1 );
+    if(current_floor_number>sigNo-SIGRTMIN-F1_ARRIVAL+1){
+        gtk_widget_set_name(current_floor_btn, "unready_btn");        
+    } 
+    current_floor_number=sigNo-SIGRTMIN-F1_ARRIVAL+1;           
     switch(sigNo-SIGRTMIN){
         case F1_ARRIVAL:            
-            gtk_button_set_label(GTK_BUTTON(current_floor_btn),"1");
+            gtk_button_set_label(GTK_BUTTON(current_floor_btn),"1");            
             break;
         case F2_ARRIVAL:            
             gtk_button_set_label(GTK_BUTTON(current_floor_btn),"2");
@@ -118,30 +125,34 @@ void current_floor_change(int sigNo){
             break;
     }   
 }
-void direction_change(int sigNo){
-    switch(sigNo-SIGRTMIN){
-        case LIFT_UP:
-            if(strcmp(gtk_widget_get_name(call_btn),"ready_btn")==0)
-               gtk_widget_set_name(call_btn, "default_btn");              
-            gtk_button_set_label(GTK_BUTTON(up_down_btn),"UP");
-            break;
-        case LIFT_STOP:
-            if(current_floor_number+1==my_floor_number)
-              gtk_widget_set_name(call_btn, "ready_btn");              
-            gtk_button_set_label(GTK_BUTTON(up_down_btn),"STAND");
-            break;
-        case LIFT_DOWN:
-            if(strcmp(gtk_widget_get_name(call_btn),"ready_btn")==0)
-               gtk_widget_set_name(call_btn, "default_btn");            
-            gtk_button_set_label(GTK_BUTTON(up_down_btn),"DOWN");
-            break;          
-        default:            
-            break;
-    }
-}
+// void direction_change(int sigNo){
+//     switch(sigNo-SIGRTMIN){
+//         case LIFT_UP:
+//             if(strcmp(gtk_widget_get_name(call_btn),"ready_btn")==0)
+//                gtk_widget_set_name(call_btn, "default_btn");              
+//             gtk_button_set_label(GTK_BUTTON(up_down_btn),"UP");
+//             break;
+//         case LIFT_STOP:
+//             if(current_floor_number+1==my_floor_number)
+//               gtk_widget_set_name(call_btn, "ready_btn");              
+//             gtk_button_set_label(GTK_BUTTON(up_down_btn),"STAND");
+//             break;
+//         case LIFT_DOWN:
+//             if(strcmp(gtk_widget_get_name(call_btn),"ready_btn")==0)
+//                gtk_widget_set_name(call_btn, "default_btn");            
+//             gtk_button_set_label(GTK_BUTTON(up_down_btn),"DOWN");
+//             break;          
+//         default:            
+//             break;
+//     }
+// }
 void finish_move(){    
     //printf("Tang %d get arrives notification\n",my_floor_number);
+    //gtk_widget_set_name(current_floor_btn, "ready_btn");    
     gtk_widget_set_name(call_btn, "default_btn");
+}
+void using(){
+    gtk_widget_set_name(current_floor_btn, "ready_btn");
 }
 int main(int argc, char *argv[])
 {	
@@ -150,6 +161,7 @@ int main(int argc, char *argv[])
     signal(SIGRTMIN+F1_ARRIVAL,current_floor_change);signal(SIGRTMIN+F2_ARRIVAL,current_floor_change);signal(SIGRTMIN+F3_ARRIVAL,current_floor_change);signal(SIGRTMIN+F4_ARRIVAL,current_floor_change);signal(SIGRTMIN+F5_ARRIVAL,current_floor_change);    
 	// signal(SIGRTMIN+LIFT_UP,direction_change);signal(SIGRTMIN+LIFT_DOWN,direction_change);signal(SIGRTMIN+LIFT_STOP,direction_change);
     signal(SIGRTMIN+FINISHED,finish_move);
+    signal(SIGRTMIN+USING,using);
     if(argc!=2){
 		printf("Usage: opx FLOOR_NUMBER\n"); exit(0);
 	}		

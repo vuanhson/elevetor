@@ -37,7 +37,7 @@ enum {LIFT_MNG,LIFT_CTR,OPE_PANE1,OPE_PANE2,OPE_PANE3,OPE_PANE4,OPE_PANE5,LIFT_P
 #define F4_UP 19
 #define F5_UP 20
 
-#define MOVING 9
+#define USING 9
 #define FINISHED 10
 
 #define LIFT_UP 6
@@ -51,7 +51,7 @@ enum {LIFT_MNG,LIFT_CTR,OPE_PANE1,OPE_PANE2,OPE_PANE3,OPE_PANE4,OPE_PANE5,LIFT_P
 #define F4_ARRIVAL 4
 #define F5_ARRIVAL 5
 
-#define WAIT_TIME 1
+#define WAIT_TIME 3
 pid_t* update_pid(int i);
 void release_shm();
 int send_signal(pid_t pid,int sigNo);
