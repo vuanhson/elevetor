@@ -155,6 +155,7 @@ activate(GtkApplication *app,
     gtk_widget_show_all(window);
 }
 void current_floor_change(int sigNo){
+    //printf("1 nhan dc %d\n",sigNo );
     gtk_widget_set_name(current_floor_btn, "unready_btn");
     current_floor_number=sigNo-SIGRTMIN;
 	switch(sigNo-SIGRTMIN){
@@ -177,82 +178,70 @@ void current_floor_change(int sigNo){
 			break;
 	}	
 }
-// void direction_change(int sigNo){
-//     switch(sigNo-SIGRTMIN){
-//         case LIFT_UP:            
-//             gtk_button_set_label(GTK_BUTTON(up_down_btn),"UP");
-//             break;
-//         case LIFT_STOP:            
-//             gtk_button_set_label(GTK_BUTTON(up_down_btn),"STAND");
-//             switch(current_floor_number+1){
-//                 case 2:
-//                     if(strcmp(gtk_widget_get_name(button2),"red_btn")==0){
-//                         gtk_widget_set_name(button2, "default_btn");                         
-//                     } 
-//                 break;
-//                 case 3:
-//                     if(strcmp(gtk_widget_get_name(button3),"red_btn")==0){
-//                         gtk_widget_set_name(button3, "default_btn");                         
-//                     } 
-//                 break;
-//                 case 4:
-//                     if(strcmp(gtk_widget_get_name(button4),"red_btn")==0){
-//                         gtk_widget_set_name(button4, "default_btn");                         
-//                     } 
-//                 break;
-//                 case 5:
-//                     if(strcmp(gtk_widget_get_name(button5),"red_btn")==0){
-//                         gtk_widget_set_name(button5, "default_btn");                         
-//                     } 
-//                 break;
-//                 default:break;
-//             }
-//             break;
-//         case LIFT_DOWN:            
-//             gtk_button_set_label(GTK_BUTTON(up_down_btn),"DOWN");
-//             break;          
-//         default:            
-//             break;
-//     }
-// }
 void finish_move(){
     //printf("Tang 1 get arrives notification\n");
     int tang;
     if(read(fifoFd,&tang,sizeof(int))>0)
         switch(tang){
             case 2:
-                //gtk_widget_set_name(current_floor_btn, "ready_btn");                
-                
-                gtk_widget_set_name(button2, "default_btn");                
+                gtk_button_set_label(GTK_BUTTON(current_floor_btn),"2");                
+                gtk_widget_set_name(button2, "default_btn");
             break;
             case 3:
-                //gtk_widget_set_name(current_floor_btn, "ready_btn");
-                
+                gtk_button_set_label(GTK_BUTTON(current_floor_btn),"3");
                 gtk_widget_set_name(button3, "default_btn");
             break;
             case 4:
-                //gtk_widget_set_name(current_floor_btn, "ready_btn");
-                
+                gtk_button_set_label(GTK_BUTTON(current_floor_btn),"4");
                 gtk_widget_set_name(button4, "default_btn");
             break;
             case 5:
-                //gtk_widget_set_name(current_floor_btn, "ready_btn");
-                
+                gtk_button_set_label(GTK_BUTTON(current_floor_btn),"5");
                 gtk_widget_set_name(button5, "default_btn");
             break;
             default:break;
         }
 }
 void using(){
-    printf("Co nhan duco\n");
+    gtk_button_set_label(GTK_BUTTON(current_floor_btn),"");    
     gtk_widget_set_name(current_floor_btn, "ready_btn");
+}
+void finish_move_and_using(){
+    //printf("Tang 1 get arrives notification\n");
+
+    int tang;
+    gtk_button_set_label(GTK_BUTTON(current_floor_btn),"");
+    if(read(fifoFd,&tang,sizeof(int))>0)
+        switch(tang){
+            case 2:
+                gtk_widget_set_name(current_floor_btn, "ready_btn");                
+                
+                gtk_widget_set_name(button2, "default_btn");
+            break;
+            case 3:
+                gtk_widget_set_name(current_floor_btn, "ready_btn");
+                
+                gtk_widget_set_name(button3, "default_btn");
+            break;
+            case 4:
+                gtk_widget_set_name(current_floor_btn, "ready_btn");
+                
+                gtk_widget_set_name(button4, "default_btn");
+            break;
+            case 5:
+                gtk_widget_set_name(current_floor_btn, "ready_btn");
+                
+                gtk_widget_set_name(button5, "default_btn");
+            break;
+            default:break;
+        }
 }
 int main(int argc, char *argv[])
 {
 	signal(SIGRTMIN+F1_ARRIVAL,current_floor_change);signal(SIGRTMIN+F2_ARRIVAL,current_floor_change);signal(SIGRTMIN+F3_ARRIVAL,current_floor_change);signal(SIGRTMIN+F4_ARRIVAL,current_floor_change);signal(SIGRTMIN+F5_ARRIVAL,current_floor_change);
-	// signal(SIGRTMIN+LIFT_UP,direction_change);signal(SIGRTMIN+LIFT_DOWN,direction_change);signal(SIGRTMIN+LIFT_STOP,direction_change);
-    signal(SIGRTMIN+FINISHED,finish_move);
+	signal(SIGRTMIN+FINISHED,finish_move);
     signal(SIGRTMIN+USING,using);
+    signal(SIGRTMIN+FINISHEDUSING,finish_move_and_using);
     pid_list=update_pid(OPE_PANE1);
     setpgid(pid_list[OPE_PANE1],pid_list[LIFT_MNG]);	
     printf("ope1_process_id %d\n",pid_list[OPE_PANE1] ); 

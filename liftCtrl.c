@@ -5,46 +5,36 @@ int des=1,current_floor=1;
 // Hàm xử lí ngắt khi nhận lệnh yêu cầu chuyển hàng từ liftMng:
 void up_request(int sigNo){	
 	//printf("up_request_get %d \n",sigNo );
-	// des=sigNo-SIGRTMIN-F1_CALL+1;
-	// printf("to floor: %d\n", des);
-	// if(current_floor<des){
-	// 	send_signal(body_process_id,SIGRTMIN+LIFT_UP);
-	//  	//send_signal(pid_list[LIFT_MNG],SIGRTMIN+LIFT_UP);
-	// }
-	// if(current_floor>des){
-	// 	send_signal(body_process_id,SIGRTMIN+LIFT_DOWN);
-	//  	//send_signal(pid_list[LIFT_MNG],SIGRTMIN+LIFT_DOWN);
-	// }
 	switch(sigNo-SIGRTMIN){
 		case F1_UP:
 		case F1_CALL: des=1;
 		printf("Back to floor %d\n",des);
 		send_signal(body_process_id,SIGRTMIN+LIFT_DOWN);
-		// send_signal(pid_list[LIFT_MNG],SIGRTMIN+LIFT_DOWN);
+		
 		break;
 		case F2_UP:
 		case F2_CALL: des=2;
 		printf("Request up to floor %d\n",des);
 		send_signal(body_process_id,SIGRTMIN+LIFT_UP);
-		// send_signal(pid_list[LIFT_MNG],SIGRTMIN+LIFT_UP);
+		
 		break;
 		case F3_UP:
 		case F3_CALL: des=3;
 		printf("Request up to floor %d\n",des);
 		send_signal(body_process_id,SIGRTMIN+LIFT_UP);
-		// send_signal(pid_list[LIFT_MNG],SIGRTMIN+LIFT_UP);
+		
 		break;
 		case F4_UP:
 		case F4_CALL: des=4;
 		printf("Request up to floor %d\n",des);
 		send_signal(body_process_id,SIGRTMIN+LIFT_UP);
-		// send_signal(pid_list[LIFT_MNG],SIGRTMIN+LIFT_UP);
+		
 		break;
 		case F5_UP:
 		case F5_CALL: des=5;
 		printf("Request up to floor %d\n",des);
 		send_signal(body_process_id,SIGRTMIN+LIFT_UP);
-		// send_signal(pid_list[LIFT_MNG],SIGRTMIN+LIFT_UP);
+		
 		break;
 		default: break;		
 	}
@@ -53,30 +43,18 @@ void up_request(int sigNo){
 // Hàm xử lí ngắt khi nhận được tín hiệu(từ liftSensor) báo thang máy đến một tầng nào đó:
 void sensor_change(int sigNo){	
 	// printf("sensor_change_get %d \n",sigNo );
-	int i;
-	send_signal(pid_list[LIFT_MNG],sigNo);
-	// current_floor=sigNo-SIGRTMIN-F1_ARRIVAL+1;
-	// if(des==current_floor){
-	// 	send_signal(body_process_id,SIGRTMIN+LIFT_STOP);
-	// 	//send_signal(pid_list[LIFT_MNG],SIGRTMIN+LIFT_STOP);
-	// 	sleep(WAIT_TIME);
-	// 	printf("chuyen hang o tang %d\n",des );
-	// 	if(des!=1){
-	// 		des=1;
-	// 		send_signal(body_process_id,SIGRTMIN+LIFT_DOWN);
-	// 		//send_signal(pid_list[LIFT_MNG],SIGRTMIN+LIFT_DOWN);
-	// 	}
-	// 	else{
-	// 		puts("Finish move");
-	// 	}
-	// }		
+	int i;			
 	switch(sigNo-SIGRTMIN){
-		case F1_ARRIVAL:		
+		case F1_ARRIVAL:
+		send_signal(pid_list[LIFT_MNG],sigNo);		
 		if(des==1){
 			send_signal(body_process_id,SIGRTMIN+LIFT_STOP);
-			send_signal(pid_list[LIFT_MNG],SIGRTMIN+FINISHED);
+			//send_signal(pid_list[LIFT_MNG],SIGRTMIN+FINISHED);
 			//printf("Ctr send Mng: %d\n",SIGRTMIN+FINISHED);									
-			puts("Finish move");			
+			puts("Hoan thanh nhiem vu.");			
+		}
+		else{
+			
 		}		
 		break;
 		case F2_ARRIVAL:		
@@ -88,9 +66,12 @@ void sensor_change(int sigNo){
 				send_signal(body_process_id,SIGRTMIN+LIFT_STOP);				
 				send_signal(pid_list[LIFT_MNG],SIGRTMIN+FINISHED);
 				sleep(WAIT_TIME);
-				printf("chuyen hang o tang %d\n",des );
+				printf("Dang chuyen hang o tang %d.\n",des );
 				des=1;
 				send_signal(body_process_id,SIGRTMIN+LIFT_DOWN);							
+			}
+			else{
+				send_signal(pid_list[LIFT_MNG],sigNo);
 			}			
 			break;		
 		default:			
