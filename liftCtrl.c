@@ -14,25 +14,25 @@ void up_request(int sigNo){
 		break;
 		case F2_UP:
 		case F2_CALL: des=2;
-		printf("Request up to floor %d\n",des);
+		printf("Bat dau di chuyen len tang %d\n",des);
 		send_signal(body_process_id,SIGRTMIN+LIFT_UP);
 		
 		break;
 		case F3_UP:
 		case F3_CALL: des=3;
-		printf("Request up to floor %d\n",des);
+		printf("Bat dau di chuyen len tang %d\n",des);
 		send_signal(body_process_id,SIGRTMIN+LIFT_UP);
 		
 		break;
 		case F4_UP:
 		case F4_CALL: des=4;
-		printf("Request up to floor %d\n",des);
+		printf("Bat dau di chuyen len tang %d\n",des);
 		send_signal(body_process_id,SIGRTMIN+LIFT_UP);
 		
 		break;
 		case F5_UP:
 		case F5_CALL: des=5;
-		printf("Request up to floor %d\n",des);
+		printf("Bat dau di chuyen len tang %d\n",des);
 		send_signal(body_process_id,SIGRTMIN+LIFT_UP);
 		
 		break;
@@ -65,8 +65,7 @@ void sensor_change(int sigNo){
 			if(des==i){
 				send_signal(body_process_id,SIGRTMIN+LIFT_STOP);				
 				send_signal(pid_list[LIFT_MNG],SIGRTMIN+FINISHED);
-				sleep(WAIT_TIME);
-				printf("Dang chuyen hang o tang %d.\n",des );
+				sleep(WAIT_TIME);				
 				des=1;
 				send_signal(body_process_id,SIGRTMIN+LIFT_DOWN);							
 			}
@@ -140,7 +139,7 @@ void body_process_run(){// đây là hàm thực hiện công việc chính củ
 	
 	pid_list[LIFT_POSITION]=15;// khởi tạo vị trí ban đầu cho body thang máy
 	//printf("Body: %d of  Ctrl: %d \n",getpid(),control_process_id );
-	pid_t last_value=15;// dont care, đưa thêm vào để debug trong khi làm.
+	// pid_t last_value=15;// dont care, đưa thêm vào để debug trong khi làm.
 	while(1){		
 		usleep(CLOCK);
 		switch(action){
@@ -160,10 +159,10 @@ void body_process_run(){// đây là hàm thực hiện công việc chính củ
 				break;
 		}
 		// dont care, đoạn này để view độ cao của body thang máy thay đổi thế nào thôi:
-		if(last_value!=pid_list[LIFT_POSITION]) {
-			printf("Height: %.1f metter\n",pid_list[LIFT_POSITION]/10.0);
-			last_value=pid_list[LIFT_POSITION];
-		}				
+		// if(last_value!=pid_list[LIFT_POSITION]) {
+		// 	printf("Height: %.1f metter\n",pid_list[LIFT_POSITION]/10.0);
+		// 	last_value=pid_list[LIFT_POSITION];
+		// }				
 	}
 }// end of body_process_run
 

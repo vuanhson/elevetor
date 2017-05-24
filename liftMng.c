@@ -8,8 +8,9 @@ int current_request,current_floor=1;
 
 void up_request(int sigNo){		
 	//printf("%d %s\n",sigNo,lift_is_moving ? "TRUE" : "FALSE" );
+	FILE *f;
 	if(lift_is_moving){		
-		write(fifoFd, &sigNo, sizeof(int));
+		write(fifoFd, &sigNo, sizeof(int));		
 	}
 	else{
 		lift_is_moving=send_signal(pid_list[LIFT_CTR],sigNo);
@@ -19,35 +20,40 @@ void up_request(int sigNo){
 void send_finish_notification(int sigNo){
 	//printf("Mng get ctr: %d, %d\n",sigNo,current_request-SIGRTMIN);
 	switch(current_request-SIGRTMIN){		
-		case F2_UP:		
+		case F2_UP:
+			printf("	Dang chuyen hang o tang 2.\n");		
 			send_signal(pid_list[OPE_PANE1],SIGRTMIN+FINISHED);
 			send_signal(pid_list[OPE_PANE2],SIGRTMIN+USING);
 			send_signal(pid_list[OPE_PANE3],SIGRTMIN+F2_ARRIVAL);
 			send_signal(pid_list[OPE_PANE4],SIGRTMIN+F2_ARRIVAL);
 			send_signal(pid_list[OPE_PANE5],SIGRTMIN+F2_ARRIVAL);
 		break;
-		case F3_UP:		
+		case F3_UP:
+			printf("	Dang chuyen hang o tang 3.\n");			
 			send_signal(pid_list[OPE_PANE1],SIGRTMIN+FINISHED);
 			send_signal(pid_list[OPE_PANE3],SIGRTMIN+USING);
 			send_signal(pid_list[OPE_PANE2],SIGRTMIN+F3_ARRIVAL);			
 			send_signal(pid_list[OPE_PANE4],SIGRTMIN+F3_ARRIVAL);
 			send_signal(pid_list[OPE_PANE5],SIGRTMIN+F3_ARRIVAL);				
 		break;
-		case F4_UP:		
+		case F4_UP:
+			printf("	Dang chuyen hang o tang 4.\n");			
 			send_signal(pid_list[OPE_PANE1],SIGRTMIN+FINISHED);
 			send_signal(pid_list[OPE_PANE4],SIGRTMIN+USING);
 			send_signal(pid_list[OPE_PANE2],SIGRTMIN+F4_ARRIVAL);
 			send_signal(pid_list[OPE_PANE3],SIGRTMIN+F4_ARRIVAL);			
 			send_signal(pid_list[OPE_PANE5],SIGRTMIN+F4_ARRIVAL);				
 		break;
-		case F5_UP:		
+		case F5_UP:
+			printf("	Dang chuyen hang o tang 5.\n");			
 			send_signal(pid_list[OPE_PANE1],SIGRTMIN+FINISHED);
 			send_signal(pid_list[OPE_PANE5],SIGRTMIN+USING);
 			send_signal(pid_list[OPE_PANE2],SIGRTMIN+F5_ARRIVAL);
 			send_signal(pid_list[OPE_PANE3],SIGRTMIN+F5_ARRIVAL);
 			send_signal(pid_list[OPE_PANE4],SIGRTMIN+F5_ARRIVAL);						
 		break;		
-		case F2_CALL:		
+		case F2_CALL:
+			printf("	Dang chuyen hang o tang 2.\n");			
 			send_signal(pid_list[OPE_PANE2],SIGRTMIN+FINISHEDUSING);			
 			send_signal(pid_list[OPE_PANE1],SIGRTMIN+F2_ARRIVAL);
 			send_signal(pid_list[OPE_PANE3],SIGRTMIN+F2_ARRIVAL);
@@ -55,6 +61,7 @@ void send_finish_notification(int sigNo){
 			send_signal(pid_list[OPE_PANE5],SIGRTMIN+F2_ARRIVAL);		
 		break;		
 		case F3_CALL:
+			printf("	Dang chuyen hang o tang 3.\n");	
 			send_signal(pid_list[OPE_PANE3],SIGRTMIN+FINISHEDUSING);			
 			send_signal(pid_list[OPE_PANE2],SIGRTMIN+F3_ARRIVAL);
 			send_signal(pid_list[OPE_PANE1],SIGRTMIN+F3_ARRIVAL);
@@ -62,6 +69,7 @@ void send_finish_notification(int sigNo){
 			send_signal(pid_list[OPE_PANE5],SIGRTMIN+F3_ARRIVAL);
 		break;		
 		case F4_CALL:
+			printf("	Dang chuyen hang o tang 4.\n");	
 			send_signal(pid_list[OPE_PANE4],SIGRTMIN+FINISHEDUSING);			
 			send_signal(pid_list[OPE_PANE2],SIGRTMIN+F4_ARRIVAL);
 			send_signal(pid_list[OPE_PANE3],SIGRTMIN+F4_ARRIVAL);
@@ -69,13 +77,15 @@ void send_finish_notification(int sigNo){
 			send_signal(pid_list[OPE_PANE5],SIGRTMIN+F4_ARRIVAL);
 		break;		
 		case F5_CALL:
+			printf("	Dang chuyen hang o tang 5.\n");	
 			send_signal(pid_list[OPE_PANE5],SIGRTMIN+FINISHEDUSING);			
 			send_signal(pid_list[OPE_PANE2],SIGRTMIN+F5_ARRIVAL);
 			send_signal(pid_list[OPE_PANE3],SIGRTMIN+F5_ARRIVAL);
 			send_signal(pid_list[OPE_PANE4],SIGRTMIN+F5_ARRIVAL);
 			send_signal(pid_list[OPE_PANE1],SIGRTMIN+F5_ARRIVAL);
 		break;
-		default:			 
+		default:
+
 		break;
 	}
 }
@@ -87,7 +97,7 @@ void lift_arrival(int sigNo){//  hàm này xử lí ngắt nhận được từ 
 			break;
 		case F1_ARRIVAL:			
 			//printf("cur req: %d\n",current_request );	
-			send_signal(pid_list[OPE_PANE1],sigNo);
+			send_signal(pid_list[OPE_PANE1],SIGRTMIN+USING);
 			send_signal(pid_list[OPE_PANE2],sigNo);
 			send_signal(pid_list[OPE_PANE3],sigNo);
 			send_signal(pid_list[OPE_PANE4],sigNo);

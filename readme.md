@@ -13,5 +13,5 @@ sudo apt-get install libgtk-3-dev
 **Bước 2:** Chạy các lệnh để biên dịch và thực thi  
 ```	
 $ make  
-$ sudo ./main  
+$ sudo ./start  
 ```

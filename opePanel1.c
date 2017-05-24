@@ -65,19 +65,19 @@ func5(GtkWidget *widget,
     }   
 }
 
-static void quit(){    
-    send_signal(pid_list[LIFT_MNG],SIGINT);
-    send_signal(pid_list[LIFT_CTR],SIGINT);
-    int i;
-    pid_t this_pid=getpid();
-    for(i=OPE_PANE1;i<=OPE_PANE5;i++){
-        if(this_pid!=pid_list[i])
-            send_signal(pid_list[i],SIGINT);
-    }    
-    shmdt(pid_list);
-    release_shm();
-    gtk_widget_destroy(window);
-}
+// static void quit(){    
+//     send_signal(pid_list[LIFT_MNG],SIGINT);
+//     send_signal(pid_list[LIFT_CTR],SIGINT);
+//     int i;
+//     pid_t this_pid=getpid();
+//     for(i=OPE_PANE1;i<=OPE_PANE5;i++){
+//         if(this_pid!=pid_list[i])
+//             send_signal(pid_list[i],SIGINT);
+//     }    
+//     shmdt(pid_list);
+//     release_shm();
+//     gtk_widget_destroy(window);
+// }
 GdkPixbuf *create_pixbuf(const gchar * filename) {
     
    GdkPixbuf *pixbuf;
@@ -147,10 +147,10 @@ activate(GtkApplication *app,
     gtk_container_add(GTK_CONTAINER(button_box), button5);
 
      // close_btn
-    close_btn = gtk_button_new_with_label("Close");
-    g_signal_connect(close_btn, "clicked", G_CALLBACK(quit), NULL);
-    //g_signal_connect_swapped(close_btn, "clicked", G_CALLBACK(gtk_widget_destroy), window);
-    gtk_container_add(GTK_CONTAINER(button_box), close_btn);
+    // close_btn = gtk_button_new_with_label("Close");
+    // g_signal_connect(close_btn, "clicked", G_CALLBACK(quit), NULL);
+    // //g_signal_connect_swapped(close_btn, "clicked", G_CALLBACK(gtk_widget_destroy), window);
+    // gtk_container_add(GTK_CONTAINER(button_box), close_btn);
     // show all widget
     gtk_widget_show_all(window);
 }
